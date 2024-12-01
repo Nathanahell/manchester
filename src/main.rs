@@ -1,6 +1,7 @@
 
 mod app;
 mod ui;
+mod art;
 
 use std::{error::Error, io};
 
@@ -22,8 +23,12 @@ use ratatui::{
             enable_raw_mode, 
             EnterAlternateScreen, 
             LeaveAlternateScreen
-        }
+        },
     }, 
+    widgets::{
+        TableState,
+        ScrollbarState
+    },
     prelude::{
         Backend,
          CrosstermBackend
@@ -31,7 +36,7 @@ use ratatui::{
         Terminal};
 
 use crate::{
-    app::{App, CurrentScreen, CurrentlyEditing},
+    app::{App, CurrentScreen},
     ui::ui,
 };
 
@@ -122,11 +127,11 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                     }
                     // Select commands from command list
                     KeyCode::Up => {
-                        todo!()
+                        app.next_row();
                         // From the search result, change the command being highlighted
                     }
                     KeyCode::Down => {
-                        todo!()
+                        app.previous_row();
                         // From the search result, change the command being highlighted
                     }
                     KeyCode::Char(char_value) => {
@@ -136,6 +141,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         - Search for app.search_value_input in commands
                         - Update the results in the display column"
                         );
+                        // update scroll_state using new search results
+                        app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
                     }
                     KeyCode::Backspace => {
                         app.search_value_input.pop();
@@ -197,15 +204,290 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, process::exit};
 
     use app::{App, CommandContext};
 
     use super::*;
-
-
     #[test]
     fn test_dry_run() -> Result<(), Box<dyn Error>>{
+        // === Dummy Data
+        let test_commands = vec![
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            }, 
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            }, 
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            }, 
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            }, 
+            CommandContext { 
+                command_name: "nmap - TCP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "nmap - UDP Full port scan".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    Some(hashmap)
+                }
+            },
+            CommandContext { 
+                command_name: "dirbuster ".to_string(), 
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: {
+                    let mut hashmap = HashMap::new();
+                    hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
+                    hashmap.insert("PORT".to_string(), "80".to_string());
+                    Some(hashmap)
+                }
+            }, 
+        ];    
+
+
         enable_raw_mode();
         let mut stderr = io::stderr();
         execute!(stderr, EnterAlternateScreen, EnableMouseCapture); // // This is a special case, normally using stdout is fine
@@ -216,53 +498,19 @@ mod test {
 
         
         // === Create app and run
-        let mut app = App {
+        let mut app = App{
             search_value_input: String::new(),
             variable_value_input: String::new(),
-            commands : vec![
-                CommandContext { 
-                    command_name: "nmap - TCP Full port scan".to_string(), 
-                    tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
-                    command: "nmap -p- <IP>".to_string(),
-                    variables_to_fill: vec!["IP".to_string()],
-                    variable_prefil_values: {
-                        let mut hashmap = HashMap::new();
-                        hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
-                        Some(hashmap)
-                    }
-                },
-                CommandContext { 
-                    command_name: "nmap - UDP Full port scan".to_string(), 
-                    tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
-                    command: "nmap -sU <IP>".to_string(),
-                    variables_to_fill: vec!["IP".to_string()],
-                    variable_prefil_values: {
-                        let mut hashmap = HashMap::new();
-                        hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
-                        Some(hashmap)
-                    }
-                },
-                CommandContext { 
-                    command_name: "dirbuster ".to_string(), 
-                    tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
-                    command: "dirbuster -u http://<IP>:<PORT>".to_string(),
-                    variables_to_fill: vec!["IP".to_string()],
-                    variable_prefil_values: {
-                        let mut hashmap = HashMap::new();
-                        hashmap.insert("IP".to_string(), "127.0.0.1".to_string());
-                        hashmap.insert("PORT".to_string(), "80".to_string());
-                        Some(hashmap)
-                    }
-                } 
-            ],
-            output_command: String::new(), 
+            commands: Vec::new(),
+            commands_after_search: Vec::new(),
+            output_command: String::new(),
             current_screen: CurrentScreen::Main,
-            currently_editing: CurrentlyEditing::Search,
+            search_table_state: TableState::new(),
+            scroll_state: ScrollbarState::new(test_commands.len() - 1)
         };
-
+        app.commands_after_search = test_commands;
 
         let res = run_app(&mut terminal, &mut app);
-
 
         // === Post run
         // restore terminal state back to normal
