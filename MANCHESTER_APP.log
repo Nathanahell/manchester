@@ -1,0 +1,3 @@
+15:16:40.210 [INFO] cli_log::init: Starting MANCHESTER_APP v0.1.0 with log level DEBUG
+15:16:46.531 [DEBUG] manchester: CommandContext { command_name: "Edge case - Last command ", tags: ["tag1", "tag2", "tag3"], command: "dirbuster -u http://<IP>:<PORT>", variables_to_fill: ["IP"], variable_prefil_values: Some({"IP": "127.0.0.1", "PORT": "80"}) }
+15:16:46.531 [INFO] manchester: This a test string
