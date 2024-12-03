@@ -1,4 +1,4 @@
-use std::io::Split;
+use std::{fmt::Debug, io::Split};
 
 use ratatui::{
     buffer::Buffer,
@@ -74,7 +74,6 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     frame.render_widget(banner,banner_chunk);
 
-
     // === Showing a cmd + it description
     let command_description_block = Block::default()
     .borders(Borders::ALL)
@@ -113,13 +112,13 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     
     // Column widths are constrained in the same way as Layout..
     let widths = [
-        Constraint::Length(10),
-        Constraint::Length(10),
-        Constraint::Length(20),
+        Constraint::Length(30),
+        Constraint::Length(30),
+        Constraint::Length(50),
     ];
 
     println!("{rows:?}");
-
+    
     // Note: TableState is stored in my application state (not constructed in your render
     // method) so that the selected row is preserved across renders
     let table = Table::new(rows, widths)
