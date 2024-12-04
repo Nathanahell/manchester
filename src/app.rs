@@ -73,6 +73,7 @@ impl App {
     }
 
     pub fn print_command(&self) -> Result<()> {
+        println!("{}", self.output_command);
         Ok(())
     }
 

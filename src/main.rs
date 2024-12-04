@@ -149,8 +149,12 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         .expect("No result row is selected by default ! Double check if there are rows. And that press arrow key to select one before pressing Enter");
 
                         let command_context = &app.commands_after_search[selected_row_index];
-                        debug!("{command_context:?}");
+                        debug!("Chosen command context : {command_context:?}");
                         app.current_screen = CurrentScreen::EditingCommand;
+
+                        // Todo : temporary solution for now
+                        // The real-setup of the output command should be done in the editing section once the command has been edited.
+                        app.output_command = command_context.command.clone();
                     }
                     KeyCode::Char(char_value) => {
                         app.search_value_input.push(char_value);
@@ -269,6 +273,5 @@ mod test {
             println!("{err:?}");
         }
         Ok(())
-
     }
 }
