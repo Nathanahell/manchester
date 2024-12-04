@@ -49,6 +49,7 @@ fn main() -> Result<(), Box<dyn Error>>{
 
     // === Logging
     init_cli_log!("MANCHESTER_APP");
+
     // === App prerun terminal set-up
     enable_raw_mode();
     let mut stderr = io::stderr();
@@ -65,7 +66,21 @@ fn main() -> Result<(), Box<dyn Error>>{
     let mut terminal = Terminal::new(backend)?;
 
     // === Create app and run
-    let mut app = App::new();
+    let mut app = App{
+        search_value_input: String::new(),
+        variable_value_input: String::new(),
+        commands: Vec::new(),
+        commands_after_search: Vec::new(),
+        output_command: String::new(),
+        current_screen: CurrentScreen::Main,
+        search_table_state: TableState::new(),
+        editcommand_table_state: TableState::new(),
+        // UNEEDED so far
+        //scroll_state: ScrollbarState::new(test_commands.len() - 1)
+
+    };
+    
+    // let mut app = App::new();
     // TODO : Parse commands from directory containing the cheatsheets
     // TODO : Include commands to app
     // app.include_commands(vec)
@@ -77,6 +92,14 @@ fn main() -> Result<(), Box<dyn Error>>{
 
     // === Post run
     // restore terminal state back to normal
+    /*  
+    if app exists without running the following boilerplante, the terminal will act strangely
+    the user will usually have to end the terminal session & start a new one
+    It is important that we handle our error in such way tha we can call this last piece
+    We are printing the output or the errors after "execute!(LeaveAlternateScreen)" so that 
+    our prints will be rendered in the "new" scren and not lost in the alternate screen we just left 
+    */
+
     disable_raw_mode()?;
     execute!(
         terminal.backend_mut(),
@@ -85,11 +108,6 @@ fn main() -> Result<(), Box<dyn Error>>{
     )?;
     terminal.show_cursor();
 
-    /*  if app exists without running the following boilerplante, the terminal will act strangely
-    the user will usually have to end the terminal session & start a new one
-    It is important that we handle our error in such way tha we can call this last piece
-    We are printing the output or the errors after "execute!(LeaveAlternateScreen)" so that 
-    our prints will be rendered in the "new" scren and not lost in the alternate screen we just left */
     if let Ok(do_print) = res {
         if do_print {
             app.print_command()?; // Exit to stdout ?
@@ -177,12 +195,6 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         KeyCode::Enter => {
                             return Ok(true);
                         }
-                        // === Do not implement starting from herer :
-                        // TODO : 
-                        // - Edit editable variables from a command
-                        // - Move between multiple variables to edit
-                        // - Highlight selected variable + Highlight variable being filled in the displayed command
-                        // - Dynamically fill the command as a value is being passed to an editable variable
                         KeyCode::Char(char_value) => {
                             app.variable_value_input.push(char_value);
                             todo!("
@@ -201,10 +213,10 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         }
                         // Variable edition navigation
                         KeyCode::Up => {
-                            todo!("Cicle through the varibles to edit")
+                            todo!("Circle through the varibles to edit")
                         }
                         KeyCode::Down => {
-                            todo!("Cicle through the varibles to edit")
+                            todo!("Circle through the varibles to edit")
                         }
                         _ => {}
                     }
@@ -223,8 +235,8 @@ mod test {
     use super::*;
     #[test]
     fn test_dry_run() -> Result<(), Box<dyn Error>>{
-        // === Dummy Data
-        
+        // === Logging
+        init_cli_log!("MANCHESTER_APP");
 
         enable_raw_mode();
         let mut stderr = io::stderr();
@@ -234,9 +246,6 @@ mod test {
         let backend = CrosstermBackend::new(stderr);
         let mut terminal = Terminal::new(backend)?;
 
-        // === Logging
-        init_cli_log!("MANCHESTER_APP");
-        
         // === Create app and run
         let mut app = App{
             search_value_input: String::new(),
@@ -272,6 +281,9 @@ mod test {
         } else if let Err(err) = res {
             println!("{err:?}");
         }
+
+        // === Test only
+        println!("TESSSSSSSSSSSSSSSSSSSSSST");
         Ok(())
     }
 }
