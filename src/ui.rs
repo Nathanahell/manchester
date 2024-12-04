@@ -1,5 +1,6 @@
 use std::{fmt::Debug, io::Split};
 
+use cli_log::debug;
 use ratatui::{
     buffer::Buffer,
     crossterm::event::{self, Event, KeyCode, KeyEventKind},
@@ -7,7 +8,7 @@ use ratatui::{
     style::{Color, Style, Stylize},
     symbols::{border, line::VERTICAL},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, Cell, Paragraph, Row, Table, TableState, Widget},
+    widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table, TableState, Widget},
     DefaultTerminal, Frame,
 };
 
@@ -43,13 +44,13 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     /// Used to render the differents screen parts or widgets of the application
     /// Changes in the app's internal state are reflected here !
     /// As such, ui() does not change the app structure internal state. It only "reads it".
-
+    
     // === Main screen layout - General the Main screen chunks
     let main_chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(2),
-            Constraint::Length(5),
+            Constraint::Length(4),
             Constraint::Length(3),
             Constraint::Min(5),
             Constraint::Length(2)
@@ -68,25 +69,11 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let banner_block = Block::default()
         .borders(Borders::ALL)
         .style(Style::default());
-            */
+    */
     let banner = Paragraph::new(BANNER)
     .alignment(Alignment::Center);
 
     frame.render_widget(banner,banner_chunk);
-
-    // === Showing a cmd + it description
-    let command_description_block = Block::default()
-    .borders(Borders::ALL)
-    .style(Style::default());
-
-    frame.render_widget(command_description_block,command_description_chunk);
-
-    // === Search prompt
-    let prompt_block = Block::default()
-    .borders(Borders::ALL)
-    .style(Style::default());
-
-    frame.render_widget(prompt_block,prompt_chunk);
 
     // === Show search results
     // Display the live results in 3 columns corresponding to the command related info
@@ -94,12 +81,14 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     .borders(Borders::ALL)
     .style(Style::default());
 
-    // List all search results
+    // List all search results 
+    // N.B : The rows generation is placed before the other widgets so that they can reuse the results
+    
     // TODO 
     // For example, rows should be filled upon app creation ?
     //let rows = [Row::new(vec!["Cell1", "Cell2", "Cell3"])];    
     
-    let mut rows = vec![];
+    let mut table_rows = vec![];
     for command_context in &app.commands_after_search {
         // todo: convert CommandContext.tags into a single string
         let row = Row::new([
@@ -107,23 +96,24 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             Cell::from(command_context.command_name.clone()),
             Cell::from(command_context.command.clone()), 
         ]);
-        rows.push(row);
+        table_rows.push(row);
     }
     
     // Column widths are constrained in the same way as Layout..
-    let widths = [
-        Constraint::Length(30),
-        Constraint::Length(30),
-        Constraint::Length(50),
+    let table_widths = [
+        Constraint::Percentage(10),
+        Constraint::Percentage(20),
+        Constraint::Percentage(70),
     ];
 
-    println!("{rows:?}");
+    debug!("{table_rows:?}");
+    debug!("App state : {:#?}", app);
     
     // Note: TableState is stored in my application state (not constructed in your render
     // method) so that the selected row is preserved across renders
-    let table = Table::new(rows, widths)
+    let table = Table::new(table_rows, table_widths)
     // ...and they can be separated by a fixed spacing.
-    .column_spacing(30)
+    .column_spacing(10)
     // You can set the style of the entire Table.
     .style(Style::new().white())
     // It has an optional header, which is simply a Row always visible at the top.
@@ -148,48 +138,143 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     frame.render_stateful_widget(table,search_resut_chunk, &mut app.search_table_state);
 
-
-    // === Help bar footer
-    let footer_block = Block::default()
+    // === Showing a cmd + it description
+    let command_description_block = Block::default()
     .borders(Borders::ALL)
     .style(Style::default());
 
-    // Mode status
-    let current_navigation_text = vec![
-        match app.current_screen {
-            CurrentScreen::Main => Span::styled("Search Mode", Style::default().fg(Color::Green)),
-            CurrentScreen::EditingCommand => Span::styled("Editing Mode", Style::default().fg(Color::Yellow)),
-        }
-        .to_owned(),
-        Span::styled(" | ", Style::default().white()),
-        {
-            match app.current_screen {
-                CurrentScreen::Main => Span::styled("Searching for a command", Style::default().fg(Color::Green)),
-                CurrentScreen::EditingCommand => Span::styled("Editing command", Style::default().fg(Color::Green))
-            }                
-        }
-    ];
+    if let Some(selected_row_index) = app.search_table_state.selected() {
+        let command_context = &app.commands_after_search[selected_row_index];
 
-    let mode_footer = Paragraph::new(Line::from(current_navigation_text))
-    .block(Block::default().borders(Borders::ALL));
+        let command_description_text = vec![
+            Line::from(vec![
+                Span::styled(&command_context.command_name, Style::new().yellow()),
+            ]),
+            Line::from(vec![
+                Span::styled(&command_context.command, Style::new().white())
+            ]),
+        ];
+        let command_description_widget = Paragraph::new(command_description_text)
+        .block(command_description_block);
+        frame.render_widget(command_description_widget,command_description_chunk);
+    }
 
-    // Navigation tips : show keys & actions
+    // === Search prompt
+    let prompt_block = Block::default()
+    .borders(Borders::ALL)
+    .style(Style::default());
+
+    let search_bar = Paragraph::new(app.search_value_input.clone())
+    .style(Style::new().white().on_black())
+    .alignment(Alignment::Left)
+    .block(prompt_block);
+
+    frame.render_widget(search_bar,prompt_chunk);
+
+
+    // === Edition pop-up
+    if CurrentScreen::EditingCommand == app.current_screen {
+        if let Some(selected_row_index) = app.search_table_state.selected() {
+            frame.render_widget(Clear, frame.area()); //this clears the entire screen and anything already drawn
+
+            let popup_area = centered_rect(60,50, frame.area());
+            
+            // Debug
+            let popup_block = Block::default()
+            .title("Command edition")
+            .borders(Borders::ALL)
+            .style(Style::default().bg(Color::Black));
+            frame.render_widget(popup_block, popup_area);
+
+            let pop_up_chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([
+                    Constraint::Percentage(10),
+                    Constraint::Percentage(70),
+                    Constraint::Percentage(20)
+                ])
+                .split(popup_area);
+
+            let command_chunk = pop_up_chunks[0];   
+            let command_table_chunk = pop_up_chunks[1];
+            let tags_chunk = pop_up_chunks[2];
+
+            // Clone command context to make temporary changes
+            let command_context = app.commands_after_search[selected_row_index].clone();
+
+            // Todo : Add command highlighing while editing ? Add a field in the app to keep track of CommandTable ?
+            let command_paragraph = Paragraph::new(
+                Span::styled(format!(">> {} ", &command_context.command), Style::default())
+            );
+
+            debug!("{:#?}", &command_context);
+
+            // Todo : generate a table dynamically based on the selected command to allow variable edition
+            //let editcommand_table = Table::new(rows, widths) ...
+            //frame.render_stateful_widget(editcommand_table,search_resut_chunk, &mut app.editcommand_table_state);
+
+            let mut tags_text = String::new();
+            for tag in &command_context.tags {
+                tags_text.push_str(&format!("[{}] ", tag));
+            }
+            let tags_paragraph = Paragraph::new(
+                Span::styled(tags_text, Style::default())
+            );
+            
+            frame.render_widget(command_paragraph, command_chunk);
+            frame.render_widget(tags_paragraph, tags_chunk);
+            //frame.render_widget(editcommandtable...?, command_table_chunk);
+        }
+    }
+
+    // === Help bar footer
+    // Debug, to delete : Render footer block to visualize space
+    /*
+    let footer_block = Block::default()
+    .borders(Borders::ALL)
+    .style(Style::default());
+    frame.render_widget(footer_block, footer_chunk);
+    */
+
+
+    // Navigation helps
     let footer_subchunks = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints([
-                Constraint::Percentage(40),
-                Constraint::Percentage(60),
-            ])
-            .split(footer_chunk);
-
+    .direction(Direction::Horizontal)
+    .constraints([
+        Constraint::Percentage(10),
+        Constraint::Percentage(90),
+    ])
+    .split(footer_chunk);
 
     let mode_subchunk = footer_subchunks[0];
     let help_subchunk = footer_subchunks[1];
 
-    frame.render_widget(footer_block, footer_chunk);
+    // Mode status
+    let current_navigation_text = match app.current_screen 
+        {
+            CurrentScreen::Main => Span::styled("Search Mode", Style::default().fg(Color::Green)),
+            CurrentScreen::EditingCommand => Span::styled("Editing Mode", Style::default().fg(Color::Yellow)),
+        }
+        .to_owned(); 
 
+    let mode_block = Paragraph::new(Line::from(current_navigation_text))
+    .block(Block::default().borders(Borders::NONE));
+
+    let help_block = Paragraph::new(
+        Span::styled("(Esc) quit | (Enter) to select command | Type to search | (↑) move up | (↓) move down", Style::default().fg(Color::Yellow)
+    ))
+    .style(
+        Style::new()
+            .bg(Color::DarkGray),
+    )
+    .centered()
+    .block(
+        Block::default().borders(Borders::NONE)
+    );
+
+    frame.render_widget(mode_block, mode_subchunk);
+    frame.render_widget(help_block, help_subchunk);
 
     // === Command editing
-    // To do after 
-
+    // To do after
 }

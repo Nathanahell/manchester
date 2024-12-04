@@ -145,29 +145,20 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                     }
                     KeyCode::Enter => {
                         // Selected row index must match commands_after_search array's corresponding element index
-                        let selected_row_index = app.search_table_state.selected().unwrap();
+                        let selected_row_index = app.search_table_state.selected()
+                        .expect("No result row is selected by default ! Double check if there are rows. And that press arrow key to select one before pressing Enter");
+
                         let command_context = &app.commands_after_search[selected_row_index];
                         debug!("{command_context:?}");
-                        info!("This a test string");
                         app.current_screen = CurrentScreen::EditingCommand;
                     }
                     KeyCode::Char(char_value) => {
                         app.search_value_input.push(char_value);
-                        todo!("
-                        In ui()
-                        - Search for app.search_value_input in commands
-                        - Update the results in the display column"
-                        );
                         // UNEEDED so far:  scroll_state using new search results
-                        // app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
+                        // UNEEDED app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
                     }
                     KeyCode::Backspace => {
                         app.search_value_input.pop();
-                        todo!("
-                        In ui()
-                        - Search for app.search_value_input in commands
-                        - Update the results in the display column"
-                        );
                     }
                     _ => {}
                 }
