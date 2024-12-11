@@ -319,13 +319,8 @@ mod test {
         }
 
         // fn parse
-        // Populate
+        // CheatSheet to populate
         let mut cheatsheets : Vec<CheatSheet> = Vec::new();
-
-        // CheatSheet fields to fill
-        let mut cheatsheet_name = String::new();
-        let mut cheatsheet_tags: Vec<String> = Vec::new();
-        let mut cheatsheet_commands: Vec<CommandContext> = Vec::new();
 
         // CommandContext fields to populate
         let mut command_name= String::new();
@@ -362,10 +357,10 @@ mod test {
 
                 if cleaned_line.is_empty() {
                 } else if cleaned_line.starts_with("# ") { // Cheatsheet name
-                    cheatsheet_name = cleaned_line.replace("# ", "");
+                    let cheatsheet_name = cleaned_line.replace("# ", "");
                     cheatsheet.name = cheatsheet_name;
                 } else if cleaned_line.starts_with("% ") { // Cheatsheet tags
-                    cheatsheet_tags = cleaned_line
+                    let mut cheatsheet_tags: Vec<String> = cleaned_line
                     .replace("% ", "")
                     .split(',')
                     .map(|e| { e.to_string() })
@@ -419,7 +414,6 @@ mod test {
             cheatsheets.push(cheatsheet);
             //thread::sleep(time::Duration::from_millis(1000));
         }
-
         dbg!(&cheatsheets);
     }
 }
