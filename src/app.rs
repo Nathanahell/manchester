@@ -16,8 +16,9 @@ pub struct CommandContext {
     pub command_name : String,
     pub tags: Vec<String>,
     pub command: Command,
-    pub variables_to_fill: Vec<String>, // Not yet implemented
-    pub variable_prefil_values:Option<HashMap<usize, String>> // TODO: Map index (matching the cell index containing the variable name) to a value ?
+    pub variables_to_fill: Vec<String>, // May be UNEEDED : Not yet implemented
+    pub variable_prefil_values:Vec<String> // May be UNEEDED
+    // Variables with prefilled values ?
 }
 
 
@@ -134,7 +135,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             variable_prefil_values: {
                 let mut hashmap = HashMap::new();
                 hashmap.insert(0, "127.0.0.1".to_string());
-                Some(hashmap)
+                Vec::new()
             }
         },
         CommandContext { 
@@ -145,7 +146,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             variable_prefil_values: {
                 let mut hashmap = HashMap::new();
                 hashmap.insert(0, "127.0.0.1".to_string());
-                Some(hashmap)
+                Vec::new()
             }
         },
         CommandContext { 
@@ -157,7 +158,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
                 let mut hashmap = HashMap::new();
                 hashmap.insert(0, "127.0.0.1".to_string());
                 hashmap.insert(1, "80".to_string());
-                Some(hashmap)
+                Vec::new()
             }
         },
         CommandContext { 
@@ -168,7 +169,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             variable_prefil_values: {
                 let mut hashmap = HashMap::new();
                 hashmap.insert(0, "127.0.0.1".to_string());
-                Some(hashmap)
+                Vec::new()
             }
         },
         CommandContext { 
@@ -180,7 +181,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
                 let mut hashmap = HashMap::new();
                 hashmap.insert(0, "127.0.0.1".to_string());
                 hashmap.insert(1, "80".to_string());
-                Some(hashmap)
+                Vec::new()
             }
         }, 
     ];

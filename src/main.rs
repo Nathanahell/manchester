@@ -3,7 +3,7 @@ mod app;
 mod ui;
 mod art;
 
-use app::CommandContext;
+use app::{CheatSheet, CommandContext};
 use cli_log::*; // also import logging macros
 
 use std::{error::Error, io};
@@ -40,10 +40,17 @@ use ratatui::{
         },
         Terminal};
 
+use std::path::Path;
+
+use include_dir::{include_dir, Dir, File};
+use glob::{glob, PatternError};
+
 use crate::{
     app::{App, CurrentScreen, generate_test_data},
     ui::ui,
 };
+
+static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
 
 fn main() -> Result<(), Box<dyn Error>>{
     /// Main function
@@ -228,6 +235,129 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
     }
 }
 
+// TODO : implement error handling for each unwrap + match arms
+pub fn read_cheatsheets() ->Vec<&'static include_dir::File<'static>> {
+    // Define the glob pattern to match files with the .md extension
+    let glob_pattern = format!("{}/cheats/**/*.md", env!("CARGO_MANIFEST_DIR"));
+    let mut files: Vec<&'static include_dir::File> = vec![];
+
+    for entry in glob(&glob_pattern).unwrap() {
+        match entry {
+            Ok(path) => {
+                // Strip prefix to match the included directory structure
+                let relative_path = path.strip_prefix(Path::new(env!("CARGO_MANIFEST_DIR")).join("cheats")).unwrap();
+                if let Some(file) = RESSOURCES_DIR.get_file(relative_path) {
+                    files.push(file);
+                    //println!("File path {}", file.path().display());
+                    //println!("{}", file.contents_utf8().unwrap());
+                }
+            }
+            Err(err) => {
+                eprintln!("{:?}", err);
+            }
+        }
+    }
+    files
+}
+
+pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
+    // CheatSheet to populate
+    let mut cheatsheets : Vec<CheatSheet> = Vec::new();
+
+    // CommandContext fields to populate
+    let mut command_name= String::new();
+    let mut tags: Vec<String> = Vec::new();
+    let mut command = String::new();
+    // Other fields are left blanks for now
+
+    for file in files {
+        let contents = match file.contents_utf8() {
+            Some(content) => content,
+            None => {
+                println!("No content found for {}", file.path().display());
+                ""
+            },
+        };
+        let lines:Vec<String> = contents.lines().map(String::from).collect();
+
+        // New cheatsheet to fill
+        let mut cheatsheet = CheatSheet::default();
+
+        // Line reading states
+        let mut is_parsing_cmd: bool = false;
+        let mut multiline_cmd: bool = false;
+
+        // Populate
+        let mut commands: Vec<CommandContext> = Vec::new();
+
+        for line in lines {
+            // Ugly cleaning
+            let cleaned_line = line.trim().to_string();
+            //dbg!("Cur line {}", &line);
+
+            if cleaned_line.is_empty() {
+            } else if cleaned_line.starts_with("# ") { // Cheatsheet name
+                let cheatsheet_name = cleaned_line.replace("# ", "");
+                cheatsheet.name = cheatsheet_name;
+            } else if cleaned_line.starts_with("% ") { // Cheatsheet tags
+                let mut cheatsheet_tags: Vec<String> = cleaned_line
+                .replace("% ", "")
+                .split(',')
+                .map(|e| { e.to_string() })
+                .collect();
+                cheatsheet_tags = cheatsheet_tags.into_iter().map(|e| { e.to_string() }).collect();
+                cheatsheet.sheet_tag = cheatsheet_tags;
+            } else if cleaned_line.starts_with("## ") {
+                command_name = cleaned_line.replace("## ", "");
+            } else if cleaned_line.starts_with("#") { // Command tags
+                tags = cleaned_line
+                .replace('#', "")
+                .split(' ')
+                .map(|e| { e.to_string() })
+                .collect();
+                tags = tags.into_iter().map(|e| { e.to_string() }).collect();
+                // dbg!(&tags);
+            } else if cleaned_line.contains("```") && !is_parsing_cmd{ // Start command parsing
+                is_parsing_cmd = true;
+            } else if cleaned_line.contains("```") && is_parsing_cmd { // Stop command parsing
+                is_parsing_cmd = false;
+                multiline_cmd = false;
+                //dbg!(&command);
+                //dbg!("Command parsed");
+
+                commands.push({
+                    CommandContext{
+                        command_name,
+                        tags,
+                        command,
+                        variables_to_fill: Vec::new(),
+                        variable_prefil_values: Vec::new(),
+                    }
+                });
+                command_name = String::new();
+                tags = Vec::new();
+                command = String::new();
+            } else if is_parsing_cmd { // command
+                // TODO : Argument prefill / Dynamic argument completion
+
+                // if the other lines are a command, is evaluated to true
+                if multiline_cmd {
+                    command.push_str(";\n");
+                }
+                command.push_str(&cleaned_line);
+                multiline_cmd = true;
+            }
+        }
+        //dbg!(&commands);
+        cheatsheet.commands = commands;
+        cheatsheets.push(cheatsheet);
+        //thread::sleep(time::Duration::from_millis(1000));
+    }
+    cheatsheets
+ 
+}
+
+
 #[cfg(test)]
 mod test {
     use std::{collections::HashMap, process::exit};
@@ -291,129 +421,8 @@ mod test {
 
     #[test]
     fn test_include_dir() {
-        use std::path::Path;
-
-        use include_dir::{include_dir, Dir, File};
-        use glob::glob;
-
-        static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
-
-        // Define the glob pattern to match files with the .md extension
-        let glob_pattern = format!("{}/cheats/**/*.md", env!("CARGO_MANIFEST_DIR"));
-        let mut files: Vec<include_dir::File> = vec![];
-
-        for entry in glob(&glob_pattern).unwrap() {
-            match entry {
-                Ok(path) => {
-                    // Strip prefix to match the included directory structure
-                    let relative_path = path.strip_prefix(Path::new(env!("CARGO_MANIFEST_DIR")).join("cheats"))
-                    .unwrap();
-                    if let Some(file) = RESSOURCES_DIR.get_file(relative_path) {
-                        files.push(file.to_owned());
-                        //println!("File path {}", file.path().display());
-                        //println!("{}", file.contents_utf8().unwrap());
-                    }
-                }
-                Err(e) => println!("{:?}", e),
-            }
-        }
-
-        // fn parse
-        // CheatSheet to populate
-        let mut cheatsheets : Vec<CheatSheet> = Vec::new();
-
-        // CommandContext fields to populate
-        let mut command_name= String::new();
-        let mut tags: Vec<String> = Vec::new();
-        let mut command = String::new();
-        // Other fields are left blanks for now
-
-
-        for file in files {
-            let contents = match file.contents_utf8() {
-                Some(content) => content,
-                None => {
-                    println!("No content found for {}", file.path().display());
-                    ""
-                },
-            };
-            let lines:Vec<String> = contents.lines().map(String::from).collect();
-
-            // New cheatsheet to fill
-            let mut cheatsheet = CheatSheet::default();
-
-            // Line reading states
-            let mut is_parsing_cmd: bool = false;
-            let mut multiline_cmd: bool = false;
-
-            // Populate
-            let mut commands: Vec<CommandContext> = Vec::new();
-
-            for line in lines {
-                
-                // Ugly cleaning
-                let cleaned_line = line.trim().to_string();
-                //dbg!("Cur line {}", &line);
-
-                if cleaned_line.is_empty() {
-                } else if cleaned_line.starts_with("# ") { // Cheatsheet name
-                    let cheatsheet_name = cleaned_line.replace("# ", "");
-                    cheatsheet.name = cheatsheet_name;
-                } else if cleaned_line.starts_with("% ") { // Cheatsheet tags
-                    let mut cheatsheet_tags: Vec<String> = cleaned_line
-                    .replace("% ", "")
-                    .split(',')
-                    .map(|e| { e.to_string() })
-                    .collect();
-                    cheatsheet_tags = cheatsheet_tags.into_iter().map(|e| { e.to_string() }).collect();
-                    cheatsheet.sheet_tag = cheatsheet_tags;
-                } else if cleaned_line.starts_with("## ") {
-                    command_name = cleaned_line.replace("## ", "");
-                } else if cleaned_line.starts_with("#") { // Command tags
-                    tags = cleaned_line
-                    .replace('#', "")
-                    .split(' ')
-                    .map(|e| { e.to_string() })
-                    .collect();
-                    tags = tags.into_iter().map(|e| { e.to_string() }).collect();
-                    dbg!(&tags);
-                } else if cleaned_line.contains("```") && !is_parsing_cmd{ // Start command parsing
-                    dbg!("Command parsing");
-                    is_parsing_cmd = true;
-                } else if cleaned_line.contains("```") && is_parsing_cmd { // Stop command parsing
-                    is_parsing_cmd = false;
-                    multiline_cmd = false;
-                    //dbg!(&command);
-                    //dbg!("Command parsed");
-
-                    commands.push({
-                        CommandContext{
-                            command_name,
-                            tags,
-                            command,
-                            variables_to_fill: Vec::new(),
-                            variable_prefil_values: Some(HashMap::new()),
-                        }
-                    });
-                    command_name = String::new();
-                    tags = Vec::new();
-                    command = String::new();
-                } else if is_parsing_cmd { // command
-                    // TODO : Argument prefill / Dynamic argument completion
-
-                    // if the other lines are a command, is evaluated to true
-                    if multiline_cmd {
-                        command.push_str(";\n");
-                    }
-                    command.push_str(&cleaned_line);
-                    multiline_cmd = true;
-                }
-            }
-            //dbg!(&commands);
-            cheatsheet.commands = commands;
-            cheatsheets.push(cheatsheet);
-            //thread::sleep(time::Duration::from_millis(1000));
-        }
+        let files = read_cheatsheets();
+        let cheatsheets = parse_cheatsheets(files);
         dbg!(&cheatsheets);
     }
 }
