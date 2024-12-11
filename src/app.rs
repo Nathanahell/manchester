@@ -11,7 +11,7 @@ pub enum CurrentScreen {
 // For now alias a Command with String for easier understanding
 type Command = String;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct CommandContext {
     pub command_name : String,
     pub tags: Vec<String>,
@@ -20,12 +20,28 @@ pub struct CommandContext {
     pub variable_prefil_values:Option<HashMap<usize, String>> // TODO: Map index (matching the cell index containing the variable name) to a value ?
 }
 
+
 // Not used
 // just for easier data visualization and if there is further extension of the app
+#[derive(Default, Debug)]
 pub struct CheatSheet {
     pub name: String,
     pub sheet_tag: Vec<String>,
     pub commands: Vec<CommandContext>,    
+}
+
+impl CheatSheet {
+    pub fn new(
+        name: String,
+        sheet_tag: Vec<String>,
+        commands: Vec<CommandContext>
+    ) -> Self {
+        Self {
+            name,
+            sheet_tag,
+            commands,
+        }
+    }
 }
 
 #[derive(Debug)]
