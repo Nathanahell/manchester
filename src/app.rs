@@ -50,7 +50,10 @@ pub struct App {
     pub search_value_input: String, // String to search within command names
     pub variable_value_input: String, // Input value to pass to editable variables
     pub commands: Vec<CommandContext>, // Exhaustive list of all commands
-    pub commands_after_search: Vec<CommandContext>, // List of commands matching the search
+    pub commands_after_search: Vec<CommandContext>, // List of commands matching the search. 
+    // FOR NOW : a clone of CommandContext are stored in the fields. For better performance, the search feature must be rewritten
+    // Using indexes of the vector field 'commands' to avoid self-referencn structure. 
+    // Interesting topic about self-ref struct : https://stackoverflow.com/questions/32300132/why-cant-i-store-a-value-and-a-reference-to-that-value-in-the-same-struct
     pub output_command: String, // Completed command to input, the string should be prefilled wit the selected command after a search
     pub current_screen: CurrentScreen,
     /*
@@ -63,25 +66,18 @@ pub struct App {
 }
 
 impl App {
-    pub fn new() -> Self {
+    pub fn new(commands: Vec<CommandContext>) -> App {
         // Populate the App.commands here
-        todo!();
-
-        /*
         App {
             search_value_input: String::new(),
             variable_value_input: String::new(),
-            commands: Vec::new(),
-            commands_after_search: Vec::new(),
+            commands: commands.clone(),
+            commands_after_search: commands.clone(),
             output_command: String::new(),
             current_screen: CurrentScreen::Main,
             search_table_state: TableState::new(),
             editcommand_table_state: TableState::new(), 
-            // UNEEDED so far
-            // scroll_state: ScrollbarState::new(commands_after_search.len() - 1)
         }
-
-        */
     }
 
     // uneeded ?
@@ -132,11 +128,7 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
             command: "nmap -p- <IP>".to_string(),
             variables_to_fill: vec!["IP".to_string()],
-            variable_prefil_values: {
-                let mut hashmap = HashMap::new();
-                hashmap.insert(0, "127.0.0.1".to_string());
-                Vec::new()
-            }
+            variable_prefil_values: {Vec::new()}
         },
         CommandContext { 
             command_name: "nmap - UDP Full port scan".to_string(), 
@@ -144,8 +136,6 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             command: "nmap -sU <IP>".to_string(),
             variables_to_fill: vec!["IP".to_string()],
             variable_prefil_values: {
-                let mut hashmap = HashMap::new();
-                hashmap.insert(0, "127.0.0.1".to_string());
                 Vec::new()
             }
         },
@@ -155,9 +145,6 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             command: "dirbuster -u http://<IP>:<PORT>".to_string(),
             variables_to_fill: vec!["IP".to_string()],
             variable_prefil_values: {
-                let mut hashmap = HashMap::new();
-                hashmap.insert(0, "127.0.0.1".to_string());
-                hashmap.insert(1, "80".to_string());
                 Vec::new()
             }
         },
@@ -167,8 +154,6 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             command: "nmap -p- <IP>".to_string(),
             variables_to_fill: vec!["IP".to_string()],
             variable_prefil_values: {
-                let mut hashmap = HashMap::new();
-                hashmap.insert(0, "127.0.0.1".to_string());
                 Vec::new()
             }
         },
@@ -178,9 +163,6 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             command: "dirbuster -u http://<IP>:<PORT>".to_string(),
             variables_to_fill: vec!["IP".to_string()],
             variable_prefil_values: {
-                let mut hashmap = HashMap::new();
-                hashmap.insert(0, "127.0.0.1".to_string());
-                hashmap.insert(1, "80".to_string());
                 Vec::new()
             }
         }, 

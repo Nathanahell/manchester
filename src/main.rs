@@ -171,6 +171,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         // From the search result, change the command being highlighted
                     }
                     KeyCode::Enter => {
+                        // FOR NOW : search feature clone the CommandContext
+
                         // Selected row index must match commands_after_search array's corresponding element index
                         let selected_row_index = app.search_table_state.selected()
                         .expect("No result row is selected by default ! Double check if there are rows. And that press arrow key to select one before pressing Enter");
@@ -179,7 +181,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         debug!("Chosen command context : {command_context:?}");
                         app.current_screen = CurrentScreen::EditingCommand;
 
-                        // Todo : temporary solution for now
+                        // TODO : temporary solution for now
                         // The real-setup of the output command should be done in the editing section once the command has been edited.
                         app.output_command = command_context.command.clone();
                     }
@@ -354,7 +356,6 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
         //thread::sleep(time::Duration::from_millis(1000));
     }
     cheatsheets
- 
 }
 
 
@@ -380,20 +381,25 @@ mod test {
         let mut terminal = Terminal::new(backend)?;
 
         // === Create app and run
+        /*
         let mut app = App{
-            search_value_input: String::new(),
-            variable_value_input: String::new(),
-            commands: Vec::new(),
-            commands_after_search: Vec::new(),
-            output_command: String::new(),
-            current_screen: CurrentScreen::Main,
-            search_table_state: TableState::new(),
-            editcommand_table_state: TableState::new(),
-            // UNEEDED so far
+        search_value_input: String::new(),
+        variable_value_input: String::new(),
+        commands: Vec::new(),
+        commands_after_search: Vec::new(),
+        output_command: String::new(),
+        current_screen: CurrentScreen::Main,
+        search_table_state: TableState::new(),
+        editcommand_table_state: TableState::new(),
+        // UNEEDED so far
             //scroll_state: ScrollbarState::new(test_commands.len() - 1)
 
         };
         app.commands_after_search = generate_test_data();
+        */
+
+        let commands = generate_test_data();
+        let mut app = App::new(commands);
 
         let res = run_app(&mut terminal, &mut app);
 
@@ -424,5 +430,10 @@ mod test {
         let files = read_cheatsheets();
         let cheatsheets = parse_cheatsheets(files);
         dbg!(&cheatsheets);
+    }
+
+    #[test]
+    fn test_fuzzy_search() {
+        todo!()
     }
 }
