@@ -74,7 +74,18 @@ fn main() -> Result<(), Box<dyn Error>>{
     let backend = CrosstermBackend::new(stderr);
     let mut terminal = Terminal::new(backend)?;
 
+    // === Fetch data
+    let files = read_cheatsheets();
+    let cheatsheets = parse_cheatsheets(files);
+    let mut commands = Vec::new();
+    for cheatsheet in cheatsheets {
+        for commandcontext in cheatsheet.commands {
+            commands.push(commandcontext);
+        }
+    }
+
     // === Create app and run
+    /*
     let mut app = App{
         search_value_input: String::new(),
         variable_value_input: String::new(),
@@ -84,19 +95,9 @@ fn main() -> Result<(), Box<dyn Error>>{
         current_screen: CurrentScreen::Main,
         search_table_state: TableState::new(),
         editcommand_table_state: TableState::new(),
-        // UNEEDED so far
-        //scroll_state: ScrollbarState::new(test_commands.len() - 1)
-
     };
-    
-    // let mut app = App::new();
-    // TODO : Parse commands from directory containing the cheatsheets
-    // TODO : Include commands to app
-    // app.include_commands(vec)
-
-    app.commands_after_search = generate_test_data();
-
-
+    */
+    let mut app = App::new(commands);
     let res = run_app(&mut terminal, &mut app);
 
     // === Post run
@@ -126,7 +127,6 @@ fn main() -> Result<(), Box<dyn Error>>{
     }
     Ok(())
 }
-
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool>{
     /// Main loop that draw frames into the terminal
@@ -194,6 +194,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                     }
                     KeyCode::Backspace => {
                         app.search_value_input.pop();
+                        app.update_after_search();
                     }
                     _ => {}
                 }
