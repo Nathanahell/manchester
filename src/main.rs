@@ -178,17 +178,19 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         .expect("No result row is selected by default ! Double check if there are rows. And that press arrow key to select one before pressing Enter");
 
                         let command_context = &app.commands_after_search[selected_row_index];
-                        debug!("Chosen command context : {command_context:?}");
-                        app.current_screen = CurrentScreen::EditingCommand;
-
+                        // debug!("Chosen command context : {command_context:?}");
                         // TODO : temporary solution for now
                         // The real-setup of the output command should be done in the editing section once the command has been edited.
                         app.output_command = command_context.command.clone();
+
+                        // Switch to editing on the next frame
+                        app.current_screen = CurrentScreen::EditingCommand;
                     }
                     KeyCode::Char(char_value) => {
                         app.search_value_input.push(char_value);
                         // UNEEDED so far:  scroll_state using new search results
                         // UNEEDED app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
+                        app.update_after_search();
                     }
                     KeyCode::Backspace => {
                         app.search_value_input.pop();
@@ -361,7 +363,7 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
 
 #[cfg(test)]
 mod test {
-    use std::{collections::HashMap, process::exit};
+    use std::{collections::HashMap, process::exit, result};
 
     use app::{App, CheatSheet, CommandContext};
     use time::Duration;
@@ -381,23 +383,6 @@ mod test {
         let mut terminal = Terminal::new(backend)?;
 
         // === Create app and run
-        /*
-        let mut app = App{
-        search_value_input: String::new(),
-        variable_value_input: String::new(),
-        commands: Vec::new(),
-        commands_after_search: Vec::new(),
-        output_command: String::new(),
-        current_screen: CurrentScreen::Main,
-        search_table_state: TableState::new(),
-        editcommand_table_state: TableState::new(),
-        // UNEEDED so far
-            //scroll_state: ScrollbarState::new(test_commands.len() - 1)
-
-        };
-        app.commands_after_search = generate_test_data();
-        */
-
         let commands = generate_test_data();
         let mut app = App::new(commands);
 
@@ -433,7 +418,111 @@ mod test {
     }
 
     #[test]
-    fn test_fuzzy_search() {
-        todo!()
+    fn test_fuzz() {
+        use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+        let matcher = SkimMatcherV2::default();
+        let query = "fzy";
+        let candidates = vec!["fuzzy", "buzzy", "fizzy", "fuzzy logic", "buzz"];
+    
+        let mut results = candidates
+            .iter()
+            .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
+            .collect::<Vec<_>>();
+    
+        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+    
+        println!("Fuzzy search results for '{}':", query);
+        for result in results {
+            println!("{}", result);
+        }
+    }
+
+    #[test]
+    fn test_fuzz2() {
+        use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+        let matcher = SkimMatcherV2::default();
+
+        let files = read_cheatsheets();
+        let cheatsheets = parse_cheatsheets(files);
+
+        let query = "responder";
+        let mut candidates = Vec::new();
+
+        for cheatsheet in &cheatsheets {
+            for command in &cheatsheet.commands {
+                candidates.push(&command.command);
+            }
+        }
+    
+        let mut results = candidates
+            .iter()
+            .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
+            .collect::<Vec<_>>();
+    
+        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+        results.reverse();
+        println!("Fuzzy search results for '{}':", query);
+        for result in results {
+            println!("{}", result);
+        }
+    }
+
+    #[test]
+    fn test_fuzz3() {
+        use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+        let matcher = SkimMatcherV2::default();
+
+        let files = read_cheatsheets();
+        let cheatsheets = parse_cheatsheets(files);
+        let mut commands = Vec::new();
+        
+        for cheatsheet in cheatsheets {
+            for command in cheatsheet.commands {
+                commands.push(command);
+            }
+        }
+
+        let mut app = App::new(commands);
+
+        let mut candidates = Vec::new();
+        for commandcontext in &app.commands {
+            candidates.push(commandcontext.command.clone());
+        }
+
+        let query = "responder";
+
+        let mut results = candidates
+            .iter()
+            .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
+            .collect::<Vec<_>>();
+    
+        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+        results.reverse();
+        let string_results: Vec<String>  = results
+            .iter()
+            .map(|str_slice| str_slice.to_string())
+            .collect();
+
+        /*
+        println!("Fuzzy search results for '{}':", query);
+        for result in results {
+            println!("{}", result);
+        }
+         */
+        let mut commands_after_search = Vec::new();
+        
+        for result in &string_results {
+            for commandcontext in &app.commands {
+                if commandcontext.command.as_str() == result {
+                    commands_after_search.push(commandcontext.clone());
+                }
+            }
+        }
+        app.commands_after_search = commands_after_search;
+
+        println!("Fuzzy search results for '{}':", query);
+        for result in &app.commands_after_search {
+            println!("{}", &result.command);
+        }
     }
 }

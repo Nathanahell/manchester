@@ -1,6 +1,8 @@
 use std::{collections::HashMap, io::{Error, Result}};
 use ratatui::{self, widgets::{ScrollbarState, TableState, Widget}};
 
+use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+
 #[derive(Debug, PartialEq)]
 pub enum CurrentScreen {
     Main, // 
@@ -118,6 +120,42 @@ impl App {
         };
         self.search_table_state.select(Some(index));
         //self.scroll_state = self.scroll_state.position(index * ITEM_HEIGHT);
+    }
+
+    pub fn update_after_search(&mut self) {
+        // TODO : Move the matcher in the App struct ?
+        // Is the cost of creation of a matcher acceptable for each search ?
+        let matcher = SkimMatcherV2::default();
+
+        let mut candidates = Vec::new();
+        for commandcontext in &self.commands {
+            candidates.push(commandcontext.command.clone());
+        }
+
+        // For code visibility
+        let query = self.search_value_input.as_str();
+
+        let mut results = candidates
+        .iter()
+        .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
+        .collect::<Vec<_>>();
+
+        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+        results.reverse();
+        let string_results: Vec<String>  = results
+            .iter()
+            .map(|str_slice| str_slice.to_string())
+            .collect();
+
+            let mut new_commands_after_search = Vec::new();
+            for result in &string_results {
+                for commandcontext in &self.commands {
+                    if commandcontext.command.as_str() == result {
+                        new_commands_after_search.push(commandcontext.clone());
+                    }
+                }
+            }
+            self.commands_after_search = new_commands_after_search;
     }
 }
 
