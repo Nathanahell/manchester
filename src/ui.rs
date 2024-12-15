@@ -2,14 +2,11 @@ use std::{fmt::Debug, io::Split};
 
 use cli_log::debug;
 use ratatui::{
-    buffer::Buffer,
-    crossterm::event::{self, Event, KeyCode, KeyEventKind},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
-    symbols::{border, line::VERTICAL},
-    text::{Line, Span, Text},
-    widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table, TableState, Widget},
-    DefaultTerminal, Frame,
+    text::{Line, Span},
+    widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table},
+    Frame,
 };
 
 use crate::art::BANNER;
@@ -39,12 +36,11 @@ fn centered_rect(percent_x: u16, percent_y: u16, rect: Rect) -> Rect {
     ]).split(popup_layout[1])[1]
 }
 
-pub fn ui(frame: &mut Frame, app: &mut App) {
-    /// UI function
-    /// Used to render the differents screen parts or widgets of the application
-    /// Changes in the app's internal state are reflected here !
-    /// As such, ui() does not change the app structure internal state. It only "reads it".
-    
+/// UI function
+/// Used to render the differents screen parts or widgets of the application
+/// Changes in the app's internal state are reflected here !
+/// As such, ui() does not change the app structure internal state. It only "reads it".
+pub fn ui(frame: &mut Frame, app: &mut App) {    
     // === Main screen layout - General the Main screen chunks
     let main_chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -84,15 +80,11 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     // List all search results 
     // N.B : The rows generation is placed before the other widgets so that they can reuse the results
     
-    // TODO 
-    // For example, rows should be filled upon app creation ?
-    //let rows = [Row::new(vec!["Cell1", "Cell2", "Cell3"])];    
-    
     let mut table_rows = vec![];
     for command_context in &app.commands_after_search {
-        // todo: convert CommandContext.tags into a single string
+        let tag_string = command_context.tags.clone().join(",");
         let row = Row::new([
-            Cell::from("Dummy tags"),
+            Cell::from(tag_string),
             Cell::from(command_context.command_name.clone()),
             Cell::from(command_context.command.clone()), 
         ]);
@@ -101,9 +93,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     
     // Column widths are constrained in the same way as Layout..
     let table_widths = [
-        Constraint::Percentage(10),
         Constraint::Percentage(20),
-        Constraint::Percentage(70),
+        Constraint::Percentage(30),
+        Constraint::Percentage(50),
     ];
 
     debug!("{table_rows:?}");
@@ -113,7 +105,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     // method) so that the selected row is preserved across renders
     let table = Table::new(table_rows, table_widths)
     // ...and they can be separated by a fixed spacing.
-    .column_spacing(10)
+    .column_spacing(3)
     // You can set the style of the entire Table.
     .style(Style::new().white())
     // It has an optional header, which is simply a Row always visible at the top.
@@ -202,14 +194,16 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             // Clone command context to make temporary changes
             let command_context = app.commands_after_search[selected_row_index].clone();
 
-            // Todo : Add command highlighing while editing ? Add a field in the app to keep track of CommandTable ?
+            // TODO : Add command highlighing while editing ? Add a field in the app to keep track of CommandTable ?
             let command_paragraph = Paragraph::new(
                 Span::styled(format!(">> {} ", &command_context.command), Style::default())
             );
 
-            debug!("{:#?}", &command_context);
+            // debug!("{:#?}", &command_context);
 
-            // Todo : generate a table dynamically based on the selected command to allow variable edition
+            // Command editing
+
+            // TODO : generate a table dynamically based on the selected command to allow variable edition
             //let editcommand_table = Table::new(rows, widths) ...
             //frame.render_stateful_widget(editcommand_table,search_resut_chunk, &mut app.editcommand_table_state);
 
@@ -228,14 +222,13 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     }
 
     // === Help bar footer
-    // Debug, to delete : Render footer block to visualize space
+    // Debug : Render footer block to visualize space
     /*
     let footer_block = Block::default()
     .borders(Borders::ALL)
     .style(Style::default());
     frame.render_widget(footer_block, footer_chunk);
     */
-
 
     // Navigation helps
     let footer_subchunks = Layout::default()
@@ -274,7 +267,4 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     frame.render_widget(mode_block, mode_subchunk);
     frame.render_widget(help_block, help_subchunk);
-
-    // === Command editing
-    // To do after
 }

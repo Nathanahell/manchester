@@ -5,9 +5,8 @@ use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 
 #[derive(Debug, PartialEq)]
 pub enum CurrentScreen {
-    Main, // 
-    EditingCommand,
-    // 
+    Main, // Main screen + search
+    EditingCommand, // TODO
 }
 
 // For now alias a Command with String for easier understanding
@@ -18,9 +17,9 @@ pub struct CommandContext {
     pub command_name : String,
     pub tags: Vec<String>,
     pub command: Command,
-    pub variables_to_fill: Vec<String>, // May be UNEEDED : Not yet implemented
-    pub variable_prefil_values:Vec<String> // May be UNEEDED
-    // Variables with prefilled values ?
+    pub variables_to_fill: Vec<String>, // UNEEDED ? : todo
+    pub variable_prefil_values:Vec<String> // UNEEDED ?
+    // field for variables with prefilled values ?
 }
 
 
@@ -58,18 +57,13 @@ pub struct App {
     // Interesting topic about self-ref struct : https://stackoverflow.com/questions/32300132/why-cant-i-store-a-value-and-a-reference-to-that-value-in-the-same-struct
     pub output_command: String, // Completed command to input, the string should be prefilled wit the selected command after a search
     pub current_screen: CurrentScreen,
-    /*
-    TODO :  Table state, selected row should be preserved across renders
-     */
     // pub search_index: usize, // USELESS since search_table_state handle it ? Index for search result element, to highlight current search result
     pub search_table_state: TableState,
-    //pub scroll_state: ScrollbarState, // UNEEDED so far
     pub editcommand_table_state: TableState,
 }
 
 impl App {
     pub fn new(commands: Vec<CommandContext>) -> App {
-        // Populate the App.commands here
         App {
             search_value_input: String::new(),
             variable_value_input: String::new(),
@@ -80,11 +74,6 @@ impl App {
             search_table_state: TableState::new(),
             editcommand_table_state: TableState::new(), 
         }
-    }
-
-    // uneeded ?
-    pub fn toggle_editing_variable() {
-        todo!()
     }
 
     pub fn print_command(&self) -> Result<()> {
@@ -104,7 +93,6 @@ impl App {
             None => 0,
         };
         self.search_table_state.select(Some(index));
-        //self.scroll_state = self.scroll_state.position(index * ITEM_HEIGHT);
     }
 
     pub fn next_row(&mut self) {
@@ -119,7 +107,6 @@ impl App {
             None => 0,
         };
         self.search_table_state.select(Some(index));
-        //self.scroll_state = self.scroll_state.position(index * ITEM_HEIGHT);
     }
 
     pub fn update_after_search(&mut self) {
@@ -205,6 +192,5 @@ pub fn generate_test_data() -> Vec<CommandContext> {
             }
         }, 
     ];
-
     test_data
 }

@@ -6,6 +6,7 @@ mod art;
 use app::{CheatSheet, CommandContext};
 use cli_log::*; // also import logging macros
 
+use std::collections::HashMap;
 use std::{error::Error, io};
 
 use std::{time, thread}; // For debug
@@ -55,10 +56,9 @@ static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
 
 static easter_egg: &str = include_str!("easter_egg.txt");
 
-fn main() -> Result<(), Box<dyn Error>>{
     /// Main function
-    /// Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
-
+    // Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
+fn main() -> Result<(), Box<dyn Error>>{
     // === Logging
     init_cli_log!("MANCHESTER_APP");
 
@@ -131,12 +131,13 @@ fn main() -> Result<(), Box<dyn Error>>{
     Ok(())
 }
 
+/// Main loop that draw frames into the terminal
+/// Use generic type B implementing the Backend trait, to be backend agnostic
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool>{
-    /// Main loop that draw frames into the terminal
-    /// Use generic type B implementing the Backend trait, to be backend agnostic
+
     
-    /// === Main loop with events
-    /// Handles search, navigation + selection of search results
+    // === Main loop with events
+    // Handles search, navigation + selection of search results
     loop {
         // Polling key code - for debug
         /*
@@ -291,6 +292,8 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
         // New cheatsheet to fill
         let mut cheatsheet = CheatSheet::default();
 
+        let tags_mapping = generate_tags_mapping().unwrap();
+
         // Line reading states
         let mut is_parsing_cmd: bool = false;
         let mut multiline_cmd: bool = false;
@@ -318,12 +321,20 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
             } else if cleaned_line.starts_with("## ") {
                 command_name = cleaned_line.replace("## ", "");
             } else if cleaned_line.starts_with("#") { // Command tags
-                tags = cleaned_line
+                let tags_beforematch: Vec<String> = cleaned_line
                 .replace('#', "")
                 .split(' ')
                 .map(|e| { e.to_string() })
                 .collect();
-                tags = tags.into_iter().map(|e| { e.to_string() }).collect();
+                //tags = tags.into_iter().map(|e| {e.to_string() }).collect();
+                
+                // More compact tags representation, if a matching exists
+                for tag in tags_beforematch {
+                    match tags_mapping.get(&tag) {
+                        Some(tag) => tags.push(tag.to_string()),
+                        None => tags.push(tag.to_string())
+                    }
+                }
                 // dbg!(&tags);
             } else if cleaned_line.contains("```") && !is_parsing_cmd{ // Start command parsing
                 is_parsing_cmd = true;
@@ -362,6 +373,22 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
         //thread::sleep(time::Duration::from_millis(1000));
     }
     cheatsheets
+}
+
+pub fn generate_tags_mapping() -> Result<HashMap<String, String>, serde_json::Error> {
+        // JSON text    
+        let tags_dict = r#"
+            {"target/local": "Loc",
+            "target/remote": "Rem",
+            "target/serve": "Ser",
+            "plateform/linux": "[L] ",
+            "plateform/windows": "[W] ",
+            "plateform/mac": "[M] ",
+            "plateform/multiple": "[*] "}
+        "#;
+        // Deserialize the JSON text into a HashMap
+        let mapping: HashMap<String, String> = serde_json::from_str(tags_dict)?;
+        Ok(mapping)
 }
 
 
