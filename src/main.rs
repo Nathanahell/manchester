@@ -195,6 +195,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         // UNEEDED so far:  scroll_state using new search results
                         // UNEEDED app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
                         app.update_after_search();
+                        app.search_table_state.select(Some(0)); // Rest the search index
                     }
                     KeyCode::Backspace => {
                         app.search_value_input.pop();
