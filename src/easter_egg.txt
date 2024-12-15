@@ -1,0 +1,4 @@
+Hey there. Looks like you've found this message.
+I made this project in 2024 to get used to Rust basic concepts.
+I am glad someone is using my program.
+                                                Kaiser

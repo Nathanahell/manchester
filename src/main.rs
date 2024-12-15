@@ -52,6 +52,9 @@ use crate::{
 
 static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
 
+
+static easter_egg: &str = include_str!("easter_egg.txt");
+
 fn main() -> Result<(), Box<dyn Error>>{
     /// Main function
     /// Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
