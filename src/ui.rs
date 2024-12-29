@@ -42,7 +42,7 @@ fn centered_rect(percent_x: u16, percent_y: u16, rect: Rect) -> Rect {
 /// As such, ui() does not change the app structure internal state. It only "reads it".
 pub fn ui(frame: &mut Frame, app: &mut App) {    
     // === Main screen layout - General the Main screen chunks
-    let main_chunks = Layout::default()
+    let main_rectangles = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(2),
@@ -54,11 +54,11 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         .split(frame.area());
     
     // Reassign chunks to meaningful variables for clarity
-    let banner_chunk = main_chunks[0];
-    let command_description_chunk = main_chunks[1];
-    let prompt_chunk = main_chunks[2];
-    let search_resut_chunk = main_chunks[3];
-    let footer_chunk = main_chunks[4];
+    let banner_rectangle = main_rectangles[0];
+    let command_description_rectangle = main_rectangles[1];
+    let prompt_rectangle = main_rectangles[2];
+    let search_result_rectangle = main_rectangles[3];
+    let footer_rectangle = main_rectangles[4];
     
     // === Displaying a cool banner
     /*
@@ -69,7 +69,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let banner = Paragraph::new(BANNER)
     .alignment(Alignment::Center);
 
-    frame.render_widget(banner,banner_chunk);
+    frame.render_widget(banner,banner_rectangle);
 
     // === Show search results
     // Display the live results in 3 columns corresponding to the command related info
@@ -128,7 +128,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     .highlight_symbol(">>")
     .block(search_resut_block);
 
-    frame.render_stateful_widget(table,search_resut_chunk, &mut app.search_table_state);
+    frame.render_stateful_widget(table,search_result_rectangle, &mut app.search_table_state);
 
     // === Showing a cmd + it description
     let command_description_block = Block::default()
@@ -148,7 +148,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         ];
         let command_description_widget = Paragraph::new(command_description_text)
         .block(command_description_block);
-        frame.render_widget(command_description_widget,command_description_chunk);
+        frame.render_widget(command_description_widget,command_description_rectangle);
     }
 
     // === Search prompt
@@ -161,7 +161,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     .alignment(Alignment::Left)
     .block(prompt_block);
 
-    frame.render_widget(search_bar,prompt_chunk);
+    frame.render_widget(search_bar,prompt_rectangle);
 
 
     // === Edition pop-up
@@ -169,27 +169,30 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         if let Some(selected_row_index) = app.search_table_state.selected() {
             frame.render_widget(Clear, frame.area()); //this clears the entire screen and anything already drawn
 
-            let popup_area = centered_rect(60,50, frame.area());
+            let popup_area = centered_rect(60,60, frame.area());
             
             // Debug
             let popup_block = Block::default()
-            .title("Command edition")
             .borders(Borders::ALL)
             .style(Style::default().bg(Color::Black));
             frame.render_widget(popup_block, popup_area);
 
-            let pop_up_chunks = Layout::default()
+            let popup_edition_area = centered_rect(55,55, frame.area());
+
+            let pop_up_rectangles = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints([
                     Constraint::Percentage(10),
+                    Constraint::Percentage(10),
                     Constraint::Percentage(70),
-                    Constraint::Percentage(20)
+                    Constraint::Percentage(10)
                 ])
-                .split(popup_area);
+                .split(popup_edition_area);
 
-            let command_chunk = pop_up_chunks[0];   
-            let command_table_chunk = pop_up_chunks[1];
-            let tags_chunk = pop_up_chunks[2];
+            let title_rectangle = pop_up_rectangles[0];
+            let command_rectangle = pop_up_rectangles[1];   
+            let command_table_rectangle = pop_up_rectangles[2];
+            let tags_rectangle = pop_up_rectangles[3];
 
             // Clone command context to make temporary changes
             let command_context = app.commands_after_search[selected_row_index].clone();
@@ -205,7 +208,11 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
             // TODO : generate a table dynamically based on the selected command to allow variable edition
             //let editcommand_table = Table::new(rows, widths) ...
-            //frame.render_stateful_widget(editcommand_table,search_resut_chunk, &mut app.editcommand_table_state);
+            //frame.render_stateful_widget(editcommand_table,search_result_rectangle, &mut app.editcommand_table_state);
+
+            let title_paragraph = Paragraph::new(Span::from("Command edition"))
+            .style(Style::default())
+            .centered();
 
             let mut tags_text = String::new();
             for tag in &command_context.tags {
@@ -215,19 +222,20 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
                 Span::styled(tags_text, Style::default())
             );
             
-            frame.render_widget(command_paragraph, command_chunk);
-            frame.render_widget(tags_paragraph, tags_chunk);
-            //frame.render_widget(editcommandtable...?, command_table_chunk);
+            frame.render_widget(title_paragraph, title_rectangle);
+            frame.render_widget(command_paragraph, command_rectangle);
+            frame.render_widget(tags_paragraph, tags_rectangle);
+            //frame.render_widget(editcommandtable...?, command_table_rectangle);
         }
     }
 
     // === Help bar footer
     // Debug : Render footer block to visualize space
     /*
-    let footer_block = Block::default()
-    .borders(Borders::ALL)
-    .style(Style::default());
-    frame.render_widget(footer_block, footer_chunk);
+        let footer_block = Block::default()
+        .borders(Borders::ALL)
+        .style(Style::default());
+        frame.render_widget(footer_block, footer_rectangle);
     */
 
     // Navigation helps
@@ -237,7 +245,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         Constraint::Percentage(10),
         Constraint::Percentage(90),
     ])
-    .split(footer_chunk);
+    .split(footer_rectangle);
 
     let mode_subchunk = footer_subchunks[0];
     let help_subchunk = footer_subchunks[1];

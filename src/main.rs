@@ -453,26 +453,6 @@ mod test {
     fn test_fuzz() {
         use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
         let matcher = SkimMatcherV2::default();
-        let query = "fzy";
-        let candidates = vec!["fuzzy", "buzzy", "fizzy", "fuzzy logic", "buzz"];
-    
-        let mut results = candidates
-            .iter()
-            .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
-            .collect::<Vec<_>>();
-    
-        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
-    
-        println!("Fuzzy search results for '{}':", query);
-        for result in results {
-            println!("{}", result);
-        }
-    }
-
-    #[test]
-    fn test_fuzz2() {
-        use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
-        let matcher = SkimMatcherV2::default();
 
         let files = read_cheatsheets();
         let cheatsheets = parse_cheatsheets(files);
