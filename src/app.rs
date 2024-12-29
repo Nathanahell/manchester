@@ -1,7 +1,27 @@
-use std::{collections::HashMap, io::{Error, Result}};
+use std::{collections::HashMap, fmt::Debug, io::{Error, Result}};
 use ratatui::{self, widgets::{ScrollbarState, TableState, Widget}};
 
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+
+
+// Wrapper to implement Debug trait
+pub struct SkimMatcherV2Wrapper {
+    matcher: SkimMatcherV2,
+}
+
+impl Debug for SkimMatcherV2Wrapper {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SkimMatcherV2Wrapper")
+        .field("matcher", &"SkimMatcherV2") // Placeholder for now
+        .finish()
+    }
+}
+
+impl SkimMatcherV2Wrapper {
+    pub fn new() -> Self {
+        Self { matcher: SkimMatcherV2::default() }
+    }    
+}
 
 #[derive(Debug, PartialEq)]
 pub enum CurrentScreen {
@@ -60,6 +80,7 @@ pub struct App {
     // pub search_index: usize, // USELESS since search_table_state handle it ? Index for search result element, to highlight current search result
     pub search_table_state: TableState,
     pub editcommand_table_state: TableState,
+    matcherwrapper: SkimMatcherV2Wrapper,
 }
 
 impl App {
@@ -72,7 +93,8 @@ impl App {
             output_command: String::new(),
             current_screen: CurrentScreen::Main,
             search_table_state: TableState::new(),
-            editcommand_table_state: TableState::new(), 
+            editcommand_table_state: TableState::new(),
+            matcherwrapper: SkimMatcherV2Wrapper::new(), 
         }
     }
 
@@ -110,9 +132,7 @@ impl App {
     }
 
     pub fn update_after_search(&mut self) {
-        // TODO : Move the matcher in the App struct ?
-        // Is the cost of creation of a matcher acceptable for each search ?
-        let matcher = SkimMatcherV2::default();
+        let matcher = &self.matcherwrapper.matcher;
 
         let mut candidates = Vec::new();
         for commandcontext in &self.commands {

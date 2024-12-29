@@ -480,7 +480,7 @@ mod test {
     }
 
     #[test]
-    fn test_fuzz3() {
+    fn test_fuzz2() {
         use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
         let matcher = SkimMatcherV2::default();
 
