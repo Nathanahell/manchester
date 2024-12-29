@@ -5,7 +5,7 @@ use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Span},
-    widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table},
+    widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table, Wrap},
     Frame,
 };
 
@@ -169,7 +169,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         if let Some(selected_row_index) = app.search_table_state.selected() {
             frame.render_widget(Clear, frame.area()); //this clears the entire screen and anything already drawn
 
-            let popup_area = centered_rect(60,60, frame.area());
+            let popup_area = centered_rect(90,60, frame.area());
             
             // Debug
             let popup_block = Block::default()
@@ -177,15 +177,15 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             .style(Style::default().bg(Color::Black));
             frame.render_widget(popup_block, popup_area);
 
-            let popup_edition_area = centered_rect(55,55, frame.area());
+            let popup_edition_area = centered_rect(85,55, frame.area());
 
             let pop_up_rectangles = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints([
-                    Constraint::Percentage(10),
-                    Constraint::Percentage(10),
+                    Constraint::Percentage(5),
+                    Constraint::Percentage(20),
                     Constraint::Percentage(70),
-                    Constraint::Percentage(10)
+                    Constraint::Percentage(5)
                 ])
                 .split(popup_edition_area);
 
@@ -198,9 +198,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             let command_context = app.commands_after_search[selected_row_index].clone();
 
             // TODO : Add command highlighing while editing ? Add a field in the app to keep track of CommandTable ?
-            let command_paragraph = Paragraph::new(
-                Span::styled(format!(">> {} ", &command_context.command), Style::default())
-            );
+            let command_paragraph = Paragraph::new(Line::from(format!(">> {} ", &command_context.command)))
+            .style(Style::default())
+            .wrap(Wrap { trim: true });
 
             // debug!("{:#?}", &command_context);
 
@@ -210,7 +210,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             //let editcommand_table = Table::new(rows, widths) ...
             //frame.render_stateful_widget(editcommand_table,search_result_rectangle, &mut app.editcommand_table_state);
 
-            let title_paragraph = Paragraph::new(Span::from("Command edition"))
+            let title_paragraph = Paragraph::new(Line::from("Command edition"))
             .style(Style::default())
             .centered();
 
