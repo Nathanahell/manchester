@@ -7,7 +7,7 @@ edition = "2021"
 cli-log = "2.1.0"
 fuzzy-matcher = "0.3.7"
 glob = "0.3.1"
-include_dir = "0.7.4"
+include_dir = { version = "0.7.4", features= ["glob"] }
 ratatui = "0.29.0"
 serde = "1.0.216"
 serde_json = "1.0.133"
