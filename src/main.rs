@@ -3,12 +3,9 @@ mod art;
 mod ui;
 
 use app::{CheatSheet, CommandContext};
-use cli_log::*; // also import logging macros
 
 use std::collections::HashMap;
 use std::{error::Error, io};
-
-use std::{thread, time}; // For debug
 
 use ratatui::{
     crossterm::{
@@ -42,9 +39,6 @@ static easter_egg: &str = include_str!("easter_egg.txt");
 /// Main function
 // Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
 fn main() -> Result<(), Box<dyn Error>> {
-    // === Logging
-    init_cli_log!("MANCHESTER_APP");
-
     // === App prerun terminal set-up
     enable_raw_mode();
     let mut stderr = io::stderr();
@@ -69,20 +63,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             commands.push(commandcontext);
         }
     }
-
-    // === Create app and run
-    /*
-    let mut app = App{
-        search_value_input: String::new(),
-        variable_value_input: String::new(),
-        commands: Vec::new(),
-        commands_after_search: Vec::new(),
-        output_command: String::new(),
-        current_screen: CurrentScreen::Main,
-        search_table_state: TableState::new(),
-        editcommand_table_state: TableState::new(),
-    };
-    */
     let mut app = App::new(commands);
     let res = run_app(&mut terminal, &mut app);
 
@@ -114,9 +94,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Main loop that draw frames into the terminal
-/// Use generic type B implementing the Backend trait, to be backend agnostic
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool> {
+    // Main loop that draw frames into the terminal
+    // Use generic type B implementing the Backend trait, to be backend agnostic
+
     // === Main loop with events
     // Handles search, navigation + selection of search results
     loop {
@@ -228,8 +209,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
     }
 }
 
-// TODO : implement error handling for each unwrap + match arms
 pub fn read_cheatsheets() -> Vec<&'static include_dir::File<'static>> {
+    // TODO : implement error handling for each unwrap + match arms
     // Define the glob pattern to match files with the .md extension
     // let glob_pattern = format!("{}/cheats/**/*.md", env!("CARGO_MANIFEST_DIR"));
     let glob_pattern = "**/*.md";
@@ -352,7 +333,6 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
         //dbg!(&commands);
         cheatsheet.commands = commands;
         cheatsheets.push(cheatsheet);
-        //thread::sleep(time::Duration::from_millis(1000));
     }
     cheatsheets
 }
@@ -378,13 +358,11 @@ mod test {
     use std::{collections::HashMap, process::exit, result};
 
     use app::{App, CheatSheet, CommandContext};
-    use time::Duration;
 
     use super::*;
     #[test]
     fn test_dry_run() -> Result<(), Box<dyn Error>> {
         // === Logging
-        init_cli_log!("MANCHESTER_APP");
 
         enable_raw_mode();
         let mut stderr = io::stderr();
