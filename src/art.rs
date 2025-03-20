@@ -1,2 +1,2 @@
-pub const BANNER: &str = "Manchester
-Le répertoire à commandes. Made by Kai'ser";
+pub const BANNER: &str = "Manchester - Just a simple command notebook <3
+Made by Kai'ser";

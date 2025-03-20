@@ -34,8 +34,6 @@ use crate::{
 
 static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
 
-static easter_egg: &str = include_str!("easter_egg.txt");
-
 /// Main function
 // Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
 fn main() -> Result<(), Box<dyn Error>> {
@@ -69,6 +67,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // === Post run
     // restore terminal state back to normal
     /*
+    Per Ratatui's doc :
     if app exists without running the following boilerplante, the terminal will act strangely
     the user will usually have to end the terminal session & start a new one
     It is important that we handle our error in such way tha we can call this last piece
@@ -101,7 +100,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
     // === Main loop with events
     // Handles search, navigation + selection of search results
     loop {
-        // Polling key code - for debug
+        // DEBUG : Show key code
         /*
         if let Event::Key(key) = event::read()? {
             dbg!(key.code);
@@ -137,16 +136,14 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                         // From the search result, change the command being highlighted
                     }
                     KeyCode::Enter => {
-                        // FOR NOW : search feature clone the CommandContext
+                        // The search feature clone the CommandContext
 
                         // Selected row index must match commands_after_search array's corresponding element index
                         let selected_row_index = app.search_table_state.selected()
                         .expect("No result row is selected by default ! Double check if there are rows. And that press arrow key to select one before pressing Enter");
 
                         let command_context = &app.commands_after_search[selected_row_index];
-                        // debug!("Chosen command context : {command_context:?}");
-                        // TODO : temporary solution for now
-                        // The real-setup of the output command should be done in the editing section once the command has been edited.
+                        // TODO : The real-setup of the output command should be done in the editing section once the command has been edited.
                         app.output_command = command_context.command.clone();
 
                         // Switch to editing on the next frame
@@ -154,8 +151,6 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                     }
                     KeyCode::Char(char_value) => {
                         app.search_value_input.push(char_value);
-                        // UNEEDED so far:  scroll_state using new search results
-                        // UNEEDED app.scroll_state = ScrollbarState::new(app.commands_after_search.len() - 1);
                         app.update_after_search();
                         app.search_table_state.select(Some(0)); // Rest the search index
                     }
@@ -172,7 +167,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                             app.current_screen = CurrentScreen::Main;
                             app.variable_value_input = String::new(); // flush existing string input fed during variable edition
                         }
-                        // For now, end the app run once you have selected a command
+                        // End the app run once you have selected a command
                         KeyCode::Enter => {
                             return Ok(true);
                         }
@@ -210,9 +205,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
 }
 
 pub fn read_cheatsheets() -> Vec<&'static include_dir::File<'static>> {
-    // TODO : implement error handling for each unwrap + match arms
     // Define the glob pattern to match files with the .md extension
-    // let glob_pattern = format!("{}/cheats/**/*.md", env!("CARGO_MANIFEST_DIR"));
     let glob_pattern = "**/*.md";
     let mut files: Vec<&'static include_dir::File> = vec![];
 
@@ -304,7 +297,6 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
                 is_parsing_cmd = false;
                 multiline_cmd = false;
                 //dbg!(&command);
-                //dbg!("Command parsed");
 
                 commands.push({
                     CommandContext {
