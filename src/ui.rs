@@ -1,6 +1,5 @@
 use std::{fmt::Debug, io::Split};
 
-use cli_log::debug;
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
@@ -98,8 +97,8 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         Constraint::Percentage(50),
     ];
 
-    debug!("{table_rows:?}");
-    debug!("App state : {:#?}", app);
+    // dbg!("{table_rows:?}");
+    // dbg!("App state : {:#?}", &app);
 
     // Note: TableState is stored in my application state (not constructed in your render
     // method) so that the selected row is preserved across renders
