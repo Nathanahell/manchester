@@ -7,7 +7,7 @@ It is designed for portability, ease of use, and can be customized to suit your 
 The main features of the tool are the following :
 - **Portability**: the project is cross-platfrom as it can be built for different targets.
 - **Does not require internet access**: your notes are embedded within the binary, thereforce no internet access or install is required after building the porject. Ideal for constrained environment.
-- **Ease of use**
+- **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is intuitive.
 
 This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Shoutout to them !
 
