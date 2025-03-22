@@ -11,6 +11,14 @@ The main features of the tool are the following :
 
 This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Shoutout to them !
 
+
+## The author's note
+
+This is my first ever open-source project. I took a chance to practice Rust and to fiddle with the Ratatui library.
+I am open for any improvements in my code as I am not quite a software developper yet. Any constructive feedback is much appreciated. :)
+
+Like the project ? Don't hesitate to contribute !
+
 ## Demo
 
 Search command and output in the terminal.
@@ -56,8 +64,3 @@ Right now the focus would be to :
 - Windows's Defender evasion if the binary is flagged a malicious since it may contains malicious commands. Maybe through the encryption of the embedded files at rest ?
 
 For adding commands, a template is present inside cheats/arsenal-cheats folder. Should every tag feature be implemented in the future, everything written in the commands description should appear.
-
-## The author's note
-
-This is my first ever open-source project. I took a chance to practice Rust and to fiddle with the Ratatui library.
-I am open for any improvements in my code as I am not quite a software developper yet. Any constructive feedback is much appreciated. :)
