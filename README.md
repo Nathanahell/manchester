@@ -17,6 +17,8 @@ Search command and output in the terminal.
 
 ![demo](demo/demo.gif)
 
+*Made with asciinema and agg*
+
 ## Build
 ```
 cargo build --release
