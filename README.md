@@ -11,6 +11,12 @@ The main features of the tool are the following :
 
 This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Shoutout to them !
 
+## Demo
+
+Search command and output in the terminal.
+
+![demo](demo/demo.gif)
+
 ## Build
 ```
 cargo build --release
