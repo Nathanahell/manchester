@@ -1,12 +1,5 @@
-use ratatui::{
-    self,
-    widgets::{ScrollbarState, TableState, Widget},
-};
-use std::{
-    collections::HashMap,
-    fmt::Debug,
-    io::{Error, Result},
-};
+use ratatui::{self, widgets::TableState};
+use std::{fmt::Debug, io::Result};
 
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 

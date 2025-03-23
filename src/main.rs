@@ -9,26 +9,18 @@ use std::{error::Error, io};
 
 use ratatui::{
     crossterm::{
-        event::{
-            self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind,
-        },
+        event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
         execute,
-        terminal::{
-            self, disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
-        },
+        terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     },
     prelude::{Backend, CrosstermBackend},
-    widgets::{ScrollbarState, TableState},
     Terminal,
 };
 
-use std::path::Path;
-
-use glob::{glob, PatternError};
 use include_dir::{include_dir, Dir, File};
 
 use crate::{
-    app::{generate_test_data, App, CurrentScreen},
+    app::{App, CurrentScreen},
     ui::ui,
 };
 
@@ -211,8 +203,8 @@ pub fn read_cheatsheets() -> Vec<&'static include_dir::File<'static>> {
     let glob_pattern = "**/*.md";
     let mut files: Vec<&'static include_dir::File> = vec![];
 
-    for dirEntry in RESSOURCES_DIR.find(glob_pattern).unwrap() {
-        if let Some(file) = RESSOURCES_DIR.get_file(dirEntry.path()) {
+    for dir_entry in RESSOURCES_DIR.find(glob_pattern).unwrap() {
+        if let Some(file) = RESSOURCES_DIR.get_file(dir_entry.path()) {
             files.push(file);
             //println!("File path {}", file.path().display());
             //println!("{}", file.contents_utf8().unwrap());
@@ -349,9 +341,8 @@ pub fn generate_tags_mapping() -> Result<HashMap<String, String>, serde_json::Er
 
 #[cfg(test)]
 mod test {
-    use std::{collections::HashMap, process::exit, result};
 
-    use app::{App, CheatSheet, CommandContext};
+    use app::App;
 
     use super::*;
     #[test]
