@@ -124,6 +124,8 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Res
                 CurrentScreen::Main => match key_event.code {
                     // Exit on 'Esc'
                     KeyCode::Esc => {
+                        // Clear output command
+                        app.output_command = String::new();
                         return Ok(true);
                     }
                     // Select commands from command list

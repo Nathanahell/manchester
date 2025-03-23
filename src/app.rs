@@ -50,6 +50,23 @@ pub struct CommandContext {
                                         // field for variables with prefilled values ?
 }
 
+#[derive(Default, Debug)]
+pub struct CheatSheet {
+    pub name: String,
+    pub sheet_tag: Vec<String>,
+    pub commands: Vec<CommandContext>,
+}
+
+impl CheatSheet {
+    pub fn new(name: String, sheet_tag: Vec<String>, commands: Vec<CommandContext>) -> Self {
+        Self {
+            name,
+            sheet_tag,
+            commands,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct App {
     pub search_value_input: String, // String to search within command names
