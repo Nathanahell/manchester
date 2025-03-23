@@ -342,9 +342,50 @@ pub fn generate_tags_mapping() -> Result<HashMap<String, String>, serde_json::Er
 #[cfg(test)]
 mod test {
 
+    use super::*;
     use app::App;
 
-    use super::*;
+    pub fn generate_test_data() -> Vec<CommandContext> {
+        let test_data = vec![
+            CommandContext {
+                command_name: "Edge case - First command".to_string(),
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: { Vec::new() },
+            },
+            CommandContext {
+                command_name: "nmap - UDP Full port scan".to_string(),
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -sU <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: { Vec::new() },
+            },
+            CommandContext {
+                command_name: "dirbuster ".to_string(),
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: { Vec::new() },
+            },
+            CommandContext {
+                command_name: "nmap - TCP Full port scan".to_string(),
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "nmap -p- <IP>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: { Vec::new() },
+            },
+            CommandContext {
+                command_name: "Edge case - Last command ".to_string(),
+                tags: vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()],
+                command: "dirbuster -u http://<IP>:<PORT>".to_string(),
+                variables_to_fill: vec!["IP".to_string()],
+                variable_prefil_values: { Vec::new() },
+            },
+        ];
+        test_data
+    }
+
     #[test]
     fn test_dry_run() -> Result<(), Box<dyn Error>> {
         // === Logging
