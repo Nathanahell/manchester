@@ -1,5 +1,3 @@
-use std::{fmt::Debug, io::Split};
-
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
@@ -190,7 +188,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
             let title_rectangle = pop_up_rectangles[0];
             let command_rectangle = pop_up_rectangles[1];
-            let command_table_rectangle = pop_up_rectangles[2];
+            // let command_table_rectangle = pop_up_rectangles[2];
             let tags_rectangle = pop_up_rectangles[3];
 
             // Clone command context to make temporary changes
