@@ -5,9 +5,9 @@
 Manchester is a cross-platform command-line memo one can use to quickly find a system command.
 It is designed for portability, ease of use, and can be customized to suit your needs.
 The main features of the tool are the following :
-- **Portability**: the project is cross-platfrom as it can be built for different targets.
+- **Portability**: the project is cross-platfrom as it can be built for different targets. Take the release binary and you are all set ! No set-up required !
 - **Does not require internet access**: your notes are embedded within the binary, thereforce no internet access or install is required after building the porject. Ideal for constrained environment.
-- **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is intuitive.
+- **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is done using the arrow keys.
 
 This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Do check them out :D
 
@@ -51,7 +51,7 @@ git subtree add --prefix=<path/to/your/folder> repo_name branch_name path/to/fol
 git subtree pull --prefix=path/to/your/folder repo_name branch_name --squash
 ```
 
-If you have any idea for an easier updating of the arsenal-cheats/ repository. I am all ears.
+If you have any idea for an easier updating of the arsenal-cheats/ repository. I'm all ears.
 
 ## Documentation
 
