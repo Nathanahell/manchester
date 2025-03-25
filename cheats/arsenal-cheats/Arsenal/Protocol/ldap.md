@@ -48,24 +48,24 @@ ldapsearch -x -LLL -H ldap://<ldap-server> -b "dc=example,dc=com" "(objectClass=
 
 ## ldapsearch filter - find all DC
 ```
-# ldap filter - find all DC
+// ldap filter - find all DC
 (&(objectCategory=Computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))
 ```
 
 ## ldapsearch filter - find all servers in the directory that are not DC to pivot
 ```
-# ldap filter - find all servers in the directory that are not DCs
+// ldap filter - find all servers in the directory that are not DCs
 (&(objectCategory=computer)(operatingSystem=*server*)(!(userAccountControl:1.2.840.113556.1.4.803:=8192)))
 ```
 
 ## ldapsearch filter - find accounts with a serviceprincipalname (SPN)
 ```
-# ldap filter - find accounts with a serviceprincipalname (SPN)
+// ldap filter - find accounts with a serviceprincipalname (SPN)
 "(&(objectClass=User)(serviceprincipalname=*)(samaccountname=*))" samaccountname serviceprincipalname
 ```
 ## ldapsearch filter - find accounts with constrained delegation
 ```
-# ldap filter - find accounts with constrained delegation
+// ldap filter - find accounts with constrained delegation
 (&(objectClass=User)(msDS-AllowedToDelegateTo=*))
 ```
 
