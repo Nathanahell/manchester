@@ -69,4 +69,5 @@ Right now the focus would be to :
 ### Cheatsheets
 - Add additional commands.
   - For adding commands, a template is present inside cheats/arsenal-cheats folder.
-  - C-style inline comment (use of `//`) is preferred so as not to interfere with the parsing of the markdown headers using `#`
+  - Multiple commands in a code block is supported.
+  - C-style fullline comment (use of `//`) is preferred so as not to interfere with the parsing of the markdown headers using `#`
