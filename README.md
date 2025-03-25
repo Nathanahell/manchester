@@ -9,7 +9,7 @@ The main features of the tool are the following :
 - **Does not require internet access**: your notes are embedded within the binary, thereforce no internet access or install is required after building the porject. Ideal for constrained environment.
 - **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is intuitive.
 
-This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Shoutout to them !
+This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Do check them out :D
 
 
 ## The author's note
@@ -34,7 +34,7 @@ cargo build --release
 
 ## Update the project
 
-Since the default notes are token from Arsenal's public repository the following workaround can be used to pull its changes into the project.
+Since the default notes are token from Arsenal's public repository the following workaround is used to pull its changes into the project.
 
 - To add a remote repository
 ```
@@ -51,6 +51,8 @@ git subtree add --prefix=<path/to/your/folder> repo_name branch_name path/to/fol
 git subtree pull --prefix=path/to/your/folder repo_name branch_name --squash
 ```
 
+If you have any idea for an easier updating of the arsenal-cheats/ repository. I am all ears.
+
 ## Documentation
 
 To do.
@@ -58,9 +60,13 @@ To do.
 ## Contribution
 
 Any contribution is welcome. Be it documentation, code changes and especially commands.
+### Code contribution
 Right now the focus would be to :
-- Add additional commands.
 - Allow for the completion of a command within a box prompting for input after a command has been selected
 - Windows's Defender evasion if the binary is flagged a malicious since it may contains malicious commands. Maybe through the encryption of the embedded files at rest ?
+- Not every fields (based on a Arsenal cheatsheet) appear in the tool because I lacked the time to fully display everything.
 
-For adding commands, a template is present inside cheats/arsenal-cheats folder. Should every tag feature be implemented in the future, everything written in the commands description should appear.
+### Cheatsheets
+- Add additional commands.
+  - For adding commands, a template is present inside cheats/arsenal-cheats folder.
+  - C-style inline comment (use of `//`) is preferred so as not to interfere with the parsing of the markdown headers using `#`
