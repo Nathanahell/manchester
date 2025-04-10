@@ -8,6 +8,7 @@ telnet <FQDN/IP> 25
 ## Querying OIDs using snmpwalk - Footprinting
 ```
 snmpwalk -v2c -c <community string> <FQDN/IP>
+// common community string : public
 ```
 
 ## Bruteforcing community strings of the SNMP service - Footprinting
