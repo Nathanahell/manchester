@@ -44,13 +44,3 @@ msfconsole -x "use scanner/ssh/ssh_enumusers; set RHOSTS <ip>; set USER_FILE <us
 ```
 ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 <user>@<ip>
 ```
-
-## ssh - force password authentication
-```
-ssh -v <user>@<IP> -o PreferredAuthentications=password
-```
-
-## ssh - ssh-audit
-```
-./ssh-audit.py <IP>
-```

