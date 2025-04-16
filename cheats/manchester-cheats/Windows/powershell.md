@@ -204,3 +204,8 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 ```
 [Convert]::ToBase64String((Get-Content -path "<host>" -Encoding byte))
 ```
+
+## powershell - disable AV
+```
+Set-MpPreference -DisableRealtimeMonitoring $true  
+```

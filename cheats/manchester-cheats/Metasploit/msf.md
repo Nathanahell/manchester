@@ -27,6 +27,11 @@ msf6 show payloads
 msf6 show auxiliary
 ```
 
+## Msf - list payloads
+```
+show payloads
+```
+
 ## Search for exploits or modules within the Framework.
 ```
 msf6 search <name>
@@ -210,3 +215,13 @@ msf6 auxiliary(server/socks_proxy) > jobs
 msf6 > use post/multi/manage/autoroute
 ```
 
+## msf6 - Windows PriEsc - LocalExploit suggester
+```
+search local_exploit_suggester
+```
+## msf6 - Windows PriEsc - Hashdump
+```
+hashdump
+// OR
+lsa_dump_sam
+```
