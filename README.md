@@ -2,7 +2,7 @@
 
 ## About
 
-Manchester is a cross-platform command-line memo one can use to quickly find a system command.
+Manchester is a cross-platform command-line memo to quickly find a system command.
 It is designed for portability, ease of use, and can be customized to suit your needs.
 The main features of the tool are the following :
 - **Portability**: the project is cross-platfrom as it can be built for different targets. Take the release binary and you are all set ! No set-up required !
