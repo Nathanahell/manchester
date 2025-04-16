@@ -1,11 +1,13 @@
 mod app;
 mod art;
+mod errors;
 mod ui;
 
-use app::{CheatSheet, CommandContext};
-
 use std::collections::HashMap;
-use std::{error::Error, io};
+use std::io;
+
+use app::{CheatSheet, CommandContext};
+use errors::Result;
 
 use ratatui::{
     crossterm::{
@@ -28,11 +30,11 @@ static RESSOURCES_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/cheats");
 
 /// Main function
 // Prep & clean the terminal. Handle unexpected app exits and returns terminal to normal state
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<()> {
     // === App prerun terminal set-up
-    enable_raw_mode();
+    enable_raw_mode()?;
     let mut stderr = io::stderr();
-    execute!(stderr, EnterAlternateScreen, EnableMouseCapture); // // This is a special case, normally using stdout is fine
+    execute!(stderr, EnterAlternateScreen, EnableMouseCapture)?; // This is a special case, normally using stdout is fine
 
     /*
     We are using stderr for output
@@ -73,7 +75,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         LeaveAlternateScreen,
         DisableMouseCapture,
     )?;
-    terminal.show_cursor();
+    terminal.show_cursor()?;
 
     if let Ok(do_print) = res {
         if do_print {
@@ -85,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool> {
+pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<bool> {
     // Main loop that draw frames into the terminal
     // Use generic type B implementing the Backend trait, to be backend agnostic
 
@@ -323,7 +325,7 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
     cheatsheets
 }
 
-pub fn generate_tags_mapping() -> Result<HashMap<String, String>, serde_json::Error> {
+pub fn generate_tags_mapping() -> std::result::Result<HashMap<String, String>, serde_json::Error> {
     // JSON text
     let tags_dict = r#"
             {"target/local": "Loc",
@@ -387,7 +389,7 @@ mod test {
     }
 
     #[test]
-    fn test_dry_run() -> Result<(), Box<dyn Error>> {
+    fn test_dry_run() -> Result<()> {
         // === Logging
 
         enable_raw_mode();
