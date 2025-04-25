@@ -3,6 +3,5 @@
 
 ## smb - impacket-smbserver, create the smbserver
 ```
-sudo impacket-smbserver share -smb2support /tmp/smbshare (
-// optional : -user <test> -password <paswd>
+sudo smbserver.py -username <USERNAME> -password <PASSWD> -smb2support <SHARENAME> $(pwd)
 ```

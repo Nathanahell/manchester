@@ -253,7 +253,8 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
             //dbg!("Cur line {}", &line);
 
             if cleaned_line.is_empty() {
-            } else if cleaned_line.starts_with("# ") {
+                continue;
+            } else if cleaned_line.starts_with("# ") && !is_parsing_cmd {
                 // Cheatsheet name
                 let cheatsheet_name = cleaned_line.replace("# ", "");
                 cheatsheet.name = cheatsheet_name;
@@ -266,9 +267,9 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
                     .collect();
                 cheatsheet_tags = cheatsheet_tags.into_iter().map(|e| e.to_string()).collect();
                 cheatsheet.sheet_tag = cheatsheet_tags;
-            } else if cleaned_line.starts_with("## ") {
+            } else if cleaned_line.starts_with("## ") && !is_parsing_cmd {
                 command_name = cleaned_line.replace("## ", "");
-            } else if cleaned_line.starts_with("#") {
+            } else if cleaned_line.starts_with("#") && !is_parsing_cmd {
                 // Command tags
                 let tags_beforematch: Vec<String> = cleaned_line
                     .replace('#', "")

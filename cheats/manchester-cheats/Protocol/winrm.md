@@ -7,3 +7,8 @@
 ```
 evil-winrm -i <ip> -u Administrator -H "<passwordhash>"
 ```
+
+## evil-winrm - Send yes to prompt
+```
+echo y | <SOMECMD>
+```
