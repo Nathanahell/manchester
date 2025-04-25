@@ -34,24 +34,9 @@ cargo build --release
 
 ## Update the project
 
-Since the default notes are token from Arsenal's public repository the following workaround is used to pull its changes into the project.
+Since the default notes are token from Arsenal's public repository a simple copy of the cheats directory is used to update the repository.
 
-- To add a remote repository
-```
-# add the repository you want to embed as a remote to the Git project.
-git remote add -f arsenal-repo https://github.com/Orange-Cyberdefense/arsenal.git
-
-## pull in the specific folder you want from the remote repository using git subtree
-git subtree add --prefix=<path/to/your/folder> repo_name branch_name path/to/folder
-```
-
-- To update the subtree
-```
-# pull the latest changes from the specified folder and update your project.
-git subtree pull --prefix=path/to/your/folder repo_name branch_name --squash
-```
-
-If you have any idea for an easier updating of the arsenal-cheats/ repository. I'm all ears.
+Any suggestion for a simpler & automated workflow is appreciated.
 
 ## Documentation
 
