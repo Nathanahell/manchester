@@ -254,69 +254,80 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
 
             if cleaned_line.is_empty() {
                 continue;
-            } else if cleaned_line.starts_with("# ") && !is_parsing_cmd {
-                // Cheatsheet name
-                let cheatsheet_name = cleaned_line.replace("# ", "");
-                cheatsheet.name = cheatsheet_name;
-            } else if cleaned_line.starts_with("% ") {
-                // Cheatsheet tags
-                let mut cheatsheet_tags: Vec<String> = cleaned_line
-                    .replace("% ", "")
-                    .split(',')
-                    .map(|e| e.to_string())
-                    .collect();
-                cheatsheet_tags = cheatsheet_tags.into_iter().map(|e| e.to_string()).collect();
-                cheatsheet.sheet_tag = cheatsheet_tags;
-            } else if cleaned_line.starts_with("## ") && !is_parsing_cmd {
-                command_name = cleaned_line.replace("## ", "");
-            } else if cleaned_line.starts_with("#") && !is_parsing_cmd {
-                // Command tags
-                let tags_beforematch: Vec<String> = cleaned_line
-                    .replace('#', "")
-                    .split(' ')
-                    .map(|e| e.to_string())
-                    .collect();
-                //tags = tags.into_iter().map(|e| {e.to_string() }).collect();
+            }
 
-                // More compact tags representation, if a matching exists
-                for tag in tags_beforematch {
-                    match tags_mapping.get(&tag) {
-                        Some(tag) => tags.push(tag.to_string()),
-                        None => tags.push(tag.to_string()),
+            if !is_parsing_cmd {
+                if cleaned_line.starts_with("# ") {
+                    // Cheatsheet name
+                    let cheatsheet_name = cleaned_line.replace("# ", "");
+                    cheatsheet.name = cheatsheet_name;
+                } else if cleaned_line.starts_with("% ") {
+                    // Cheatsheet tags
+                    let mut cheatsheet_tags: Vec<String> = cleaned_line
+                        .replace("% ", "")
+                        .split(',')
+                        .map(|e| e.to_string())
+                        .collect();
+                    cheatsheet_tags = cheatsheet_tags.into_iter().map(|e| e.to_string()).collect();
+                    cheatsheet.sheet_tag = cheatsheet_tags;
+                } else if cleaned_line.starts_with("## ") {
+                    command_name = cleaned_line.replace("## ", "");
+                } else if cleaned_line.starts_with("#") {
+                    // Command tags
+                    let tags_beforematch: Vec<String> = cleaned_line
+                        .replace('#', "")
+                        .split(' ')
+                        .map(|e| e.to_string())
+                        .collect();
+                    //tags = tags.into_iter().map(|e| {e.to_string() }).collect();
+
+                    // More compact tags representation, if a matching exists
+                    for tag in tags_beforematch {
+                        match tags_mapping.get(&tag) {
+                            Some(tag) => tags.push(tag.to_string()),
+                            None => tags.push(tag.to_string()),
+                        }
                     }
+                    // dbg!(&tags);
+                } else if cleaned_line.contains("```") {
+                    // Enter command block
+                    is_parsing_cmd = true;
                 }
-                // dbg!(&tags);
-            } else if cleaned_line.contains("```") && !is_parsing_cmd {
-                // Start command parsing
-                is_parsing_cmd = true;
-            } else if cleaned_line.contains("```") && is_parsing_cmd {
-                // Stop command parsing
-                is_parsing_cmd = false;
-                multiline_cmd = false;
-                //dbg!(&command);
+            } else {
+                // Parsing command
 
-                commands.push({
-                    CommandContext {
-                        command_name,
-                        tags,
-                        command,
-                        variables_to_fill: Vec::new(),
-                        variable_prefil_values: Vec::new(),
+                if cleaned_line.contains("```") {
+                    // Reached end of command block
+                    is_parsing_cmd = false;
+                    multiline_cmd = false;
+                    //dbg!(&command);
+
+                    commands.push({
+                        CommandContext {
+                            command_name,
+                            tags,
+                            command,
+                            variables_to_fill: Vec::new(),
+                            variable_prefil_values: Vec::new(),
+                        }
+                    });
+
+                    // Reset structures for future cmd
+                    command_name = String::new();
+                    tags = Vec::new();
+                    command = String::new();
+                } else {
+                    // Still within a command
+
+                    // TODO : Argument prefill / Dynamic argument completion
+
+                    // if the other lines are a command, is evaluated to true
+                    if multiline_cmd {
+                        command.push_str(";\n");
                     }
-                });
-                command_name = String::new();
-                tags = Vec::new();
-                command = String::new();
-            } else if is_parsing_cmd {
-                // command
-                // TODO : Argument prefill / Dynamic argument completion
-
-                // if the other lines are a command, is evaluated to true
-                if multiline_cmd {
-                    command.push_str(";\n");
+                    command.push_str(&cleaned_line);
+                    multiline_cmd = true;
                 }
-                command.push_str(&cleaned_line);
-                multiline_cmd = true;
             }
         }
         //dbg!(&commands);
