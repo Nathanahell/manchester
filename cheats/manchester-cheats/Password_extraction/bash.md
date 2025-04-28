@@ -33,6 +33,21 @@ for l in $(echo ".py .pyc .pl .go .jar .c .sh");do echo -e "\nFile extension: " 
 for ext in $(echo ".xls .xls* .xltx .csv .od* .doc .doc* .pdf .pot .pot* .pp*");do echo -e "\nFile extension: " $ext; find / -name *$ext 2>/dev/null | grep -v "lib|fonts|share|core" ;done
 ```
 
+## find - ssh private keys
+```
+grep -rnw "PRIVATE KEY" /home/* 2>/dev/null | grep ":1"
+```
+
+## find - ssh pub keys
+```
+grep -rnw "ssh-rsa" /home/* 2>/dev/null | grep ":1"
+```
+
+## find - log files
+```
+for i in $(ls /var/log/* 2>/dev/null);do GREP=$(grep "accepted\|session opened\|session closed\|failure\|failed\|ssh\|password changed\|new user\|delete user\|sudo\|COMMAND\=\|logs" $i 2>/dev/null); if [[ $GREP ]];then echo -e "\n#### Log file: " $i; grep "accepted\|session opened\|session closed\|failure\|failed\|ssh\|password changed\|new user\|delete user\|sudo\|COMMAND\=\|logs" $i 2>/dev/null;fi;done
+```
+
 ## View crontab contents
 ```
 cat /etc/crontab
@@ -96,4 +111,9 @@ python3.9 firefox_decrypt.py
 ## Run Lazagne browsers module
 ```
 python3 lazagne.py browsers
+```
+
+## Opasswd - old password
+```
+sudo cat /etc/security/opasswd
 ```
