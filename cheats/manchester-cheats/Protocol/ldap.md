@@ -55,3 +55,18 @@ ldapsearch -x -LLL -H ldap://<ldap-server> -b "dc=example,dc=com" "(objectClass=
 ```
 ldap filter - more queries : https://www.politoinc.com/post/ldap-queries-for-offensive-and-defensive-operations
 ```
+
+## ldapsearch - retrieve passpol
+```
+ldapsearch -h 172.16.5.5 -x -b "DC=INLANEFREIGHT,DC=LOCAL" -s sub "*" | grep -m 1 -B 10 pwdHistoryLength
+```
+
+## ldapsearch - anonymous - list users
+```
+ldapsearch -h 172.16.5.5 -x -b "DC=INLANEFREIGHT,DC=LOCAL" -s sub "(&(objectclass=user))"  | grep sAMAccountName: | cut -f2 -d" "
+```
+
+## windapsearch.py - anonymous - list users
+```
+./windapsearch.py --dc-ip 172.16.5.5 -u "" -U
+```

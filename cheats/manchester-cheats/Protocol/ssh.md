@@ -21,7 +21,7 @@ ssh <user>@<FQDN/IP> -o PreferredAuthentications=password
 ```
 ## ssh - pivot, tunneling -  Forward data via port
 ```
-ssh -L 1234:localhost:3306 8080:localhost:80 ubuntu@<IPaddressofTarget>
+ssh -L 1234:localhost:3306 8080:localhost:80 <victim username>@<IPaddressofTarget>
 ```
 
 ## ssh - pivot, tunneling Dynamic port forward
@@ -31,7 +31,7 @@ ssh -D 9050 ubuntu@<IPaddressofTarget>
 
 ## ssh - Reverse SSH tunnel
 ```
-ssh -R <InternalIPofPivotHost>:8080:0.0.0.0:80 ubuntu@<ipAddressofTarget> -vN
+ssh -R <InternalIPofPivotHost>:<PivotHostPort2Forward>:0.0.0.0:<listener port> <victim username>@<ipAddressofTarget> -vN
 ```
 ## scp - Transfer file to target
 ```

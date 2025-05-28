@@ -12,6 +12,11 @@ crackmapexec winrm <ip> -u user.list -p password.list
 crackmapexec smb <ip> -u "user" -p "password" --shares
 ```
 
+## crackmapexec - Password policy
+```
+crackmapexec smb <ip> -u <USER> -p <PASSWD> --pass-pol
+```
+
 ## crackmapexec - Dump password hashes from SAM
 ```
 crackmapexec smb <ip> --local-auth -u <username> -p <password> --sam

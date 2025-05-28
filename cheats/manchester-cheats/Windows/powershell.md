@@ -90,7 +90,6 @@ Get-Process
 ```powershell
 [System.Net.WebRequest]::DefaultWebProxy.GetProxy("http://<ip>/<url>")
 ```
-
 ## Get language mode
 ```powershell
 $ExecutionContext.SessionState.LanguageMode
@@ -208,4 +207,9 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 ## powershell - disable AV
 ```
 Set-MpPreference -DisableRealtimeMonitoring $true  
+```
+
+## powershell - get password policy
+```
+net accounts
 ```
