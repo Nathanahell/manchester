@@ -38,3 +38,28 @@ sekurlsa::tickets /export
 
 dir *.kirbi
 ```
+
+## Bloodhound - Finding non-default AD groups from injestor JSON output
+```
+#Bloodhound - Finding non-default AD groups from injestor JSON output 
+# Non-default AD groups have the last part of their domains SID > 1000
+ cat 20250731161542_groups.json | jq '.data[]
+        | select((.ObjectIdentifier | split("-") | last | tonumber) > 1000)
+        | [.ObjectIdentifier, .Properties.name, .Properties.whencreated]'
+# DNS Admin which SID > 1000 is a default group, ignore it
+```
+
+# Faketime - Adhoc Kerberos auth
+```
+# Using faketime + ntpdate to avoid KRB_AP_ERR_SKEW(Clock skew too great)
+
+# Internal or via ligolo
+faketime "$(ntpdate -q dc01.ad.lab | cut -d ' ' -f 1,2)" \
+bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2
+
+# Through proxy or ssh
+proxychains -q faketime "$(ntpdate -q dc01.ad.lab | cut -d ' ' -f 1,2)" \ 
+bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2 --dns-tcp
+
+# source : https://notes.benheater.com/books/active-directory/page/using-faketime-for-ad-hoc-kerberos-authentication
+```
