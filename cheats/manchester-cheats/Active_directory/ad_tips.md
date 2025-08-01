@@ -63,3 +63,16 @@ bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2 -
 
 # source : https://notes.benheater.com/books/active-directory/page/using-faketime-for-ad-hoc-kerberos-authentication
 ```
+
+# impacket - secretsdumps
+```
+Useful options :
+-pwd-last-set -user-status -history
+
+Faster cracking if recent passwords are a variation of older ones that got cracked.
+
+Opsec :
+If you used ForcedPassword on a user to set a users's password
+You can revert the user's hash to its previous value to make it appear unchanged
+
+```

