@@ -32,6 +32,12 @@ ssh -D 9050 ubuntu@<IPaddressofTarget>
 ## ssh - Reverse SSH tunnel
 ```
 ssh -R <InternalIPofPivotHost>:<PivotHostPort2Forward>:0.0.0.0:<listener port> <victim username>@<ipAddressofTarget> -vN
+# Check the interface with 'ss -tnlp', if UP addr for the redirected port is 127.0.0.1, the port redirection failed.
+# Change the ssh config file using the following tip, restart the svc, restart a fresh ssh connection.
+# Si vous êtes confronté à des problèmes lors de la mise en place d’une redirection de port distant, ceci peut être dû à la configuration de votre serveur SSH. La redirection de port distant est en général désactivée par défaut. Vous pouvez modifier cela en activant GatewayPorts dans votre fichier de configuration de serveur SSH. Pour ce faire, ouvrez le fichier et définissez « GatewayPorts » sur « yes ».
+# You want your forwarded port to listen to all IP i.e 0.0.0.0
+# It is especially useful to foward smb connection to get NTLMv2 'hash' of a victim machine through a pivot machine
+# cf pivoting
 ```
 ## scp - Transfer file to target
 ```

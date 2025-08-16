@@ -6,3 +6,8 @@
 ```
 find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
 ```
+
+## ps - list processes
+```
+ps -ef --forest
+```
