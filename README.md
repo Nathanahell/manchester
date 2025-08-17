@@ -34,7 +34,7 @@ cargo build --release
 
 ## Update the project
 
-Since the default notes are token from Arsenal's public repository a simple copy of the cheats directory is used to update the repository.
+Since the default notes are taken from Arsenal's public repository a simple copy of the cheats directory is used to update the repository.
 
 Any suggestion for a simpler & automated workflow is appreciated.
 
@@ -45,9 +45,9 @@ To do.
 ## Contribution
 
 Any contribution is welcome. Be it documentation, code changes and especially commands.
-### Code contribution
+### Code contribution ideas
 - Allow for the completion of a command within a box prompting for input after a command has been selected
-- Windows's Defender evasion : the binary is flagged a malicious as it contains malicious commands.
+- Windows's Defender evasion : the binary is flagged a malicious as it contains malicious commands. Loading encrypted notes at compile-time and decrypting them at runtime would be a way to trivial detection.
 - Not every fields (based on a Arsenal cheatsheet) appear in the tool because I lacked the time to fully display everything.
 
 ### Cheatsheets
