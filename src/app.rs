@@ -139,7 +139,11 @@ impl App {
             .filter(|&candidate| matcher.fuzzy_match(candidate, query).is_some())
             .collect::<Vec<_>>();
 
-        results.sort_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+        // Sort results by ScoreType
+        // .osrt_unstable_by_key() is used as some candidates may have equalt ScoreType therefore not allowing a total ordering of the element based un their score-value
+        results
+            .sort_unstable_by_key(|&candidate| matcher.fuzzy_indices(candidate, query).unwrap().0);
+
         results.reverse();
         let string_results: Vec<String> = results
             .iter()
