@@ -6,7 +6,7 @@ Manchester is a cross-platform command-line memo to quickly find a system comman
 It is designed for portability, ease of use, and can be customized to suit your needs.
 The main features of the tool are the following :
 - **Portability**: the project is cross-platfrom as it can be built for different targets. Take the release binary and you are all set. No set-up required.
-- **Does not require internet access**: your notes are embedded within the binary, therefore no internet access or install is required after building the porject. Ideal for constrained environment.
+- **Does not require internet access**: your notes are embedded within the binary, therefore no internet access or install is required after building the project. Ideal for constrained environment.
 - **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is done using the arrow keys.
 
 This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Do check them out :D
