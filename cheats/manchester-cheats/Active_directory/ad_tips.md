@@ -74,5 +74,15 @@ Faster cracking if recent passwords are a variation of older ones that got crack
 Opsec :
 If you used ForcedPassword on a user to set a users's password
 You can revert the user's hash to its previous value to make it appear unchanged
+```
 
+# Reminder : Domain name resolution
+```
+- Domain/DC name resolution
+Once you've found a domain name + a DC for it, add to the /etc/hosts the matching resolution :
+X.X.X.X domain.tld dc.domain.tld dc01.domain.tld
+
+It is especially when using kerberos authentication and avoid LDAP authentication errors
+- Name server
+Specify the DC's ip for a given domain using -ns/-nameserver parameters in most tools.
 ```
