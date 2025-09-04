@@ -323,7 +323,7 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
 
                     // if the other lines are a command, is evaluated to true
                     if multiline_cmd {
-                        command.push_str(";\n");
+                        command.push_str("\n");
                     }
                     command.push_str(&cleaned_line);
                     multiline_cmd = true;
