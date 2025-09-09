@@ -96,7 +96,7 @@ $ cat /etc/krb5.conf
 
 [realms]
     INLANEFREIGHT.HTB = {
-        kdc = dc01.>DOMAIN>
+        kdc = dc01.<DOMAIN>
     }
 
 <SNIP>

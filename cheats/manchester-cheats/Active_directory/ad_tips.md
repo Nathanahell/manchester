@@ -78,11 +78,24 @@ You can revert the user's hash to its previous value to make it appear unchanged
 
 # Reminder : Domain name resolution
 ```
-- Domain/DC name resolution
+1. Domain/DC name resolution
 Once you've found a domain name + a DC for it, add to the /etc/hosts the matching resolution :
 X.X.X.X domain.tld dc.domain.tld dc01.domain.tld
 
+When authenticating using kerberos, replace :
+- DC IP <> DC name matching in the IP in /etc/hosts
+
 It is especially when using kerberos authentication and avoid LDAP authentication errors
-- Name server
+2. Name server
 Specify the DC's ip for a given domain using -ns/-nameserver parameters in most tools.
+```
+
+## Using NT:LM hash
+```
+# Prepend NT hashes with ':' !(Or use NT:LM hash in its entirety) Beware of authentication failures because of this
+```
+
+## Bloodhound - Run systematically an Injestor after each compromission
+```
+# If the OPSEc allows it, run systematically the injestor after each user compromission.
 ```

