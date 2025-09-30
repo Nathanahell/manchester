@@ -11,7 +11,9 @@ use errors::Result;
 
 use ratatui::{
     crossterm::{
-        event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
+        event::{
+            self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind,
+        },
         execute,
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     },
@@ -87,6 +89,18 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+fn normalize_backspace(key_event: KeyEvent) -> KeyEvent {
+    match key_event {
+        KeyEvent {
+            code: KeyCode::Char('h'),
+            modifiers,
+            kind,
+            state,
+        } if modifiers.is_empty() => KeyEvent::new(KeyCode::Backspace, modifiers),
+        other => other,
+    }
+}
+
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<bool> {
     // Main loop that draw frames into the terminal
     // Use generic type B implementing the Backend trait, to be backend agnostic
@@ -106,7 +120,11 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<
         terminal.draw(|frame| ui(frame, app))?;
 
         // N.B event::read() are blocking
-        if let Event::Key(key_event) = event::read()? {
+
+        if let Event::Key(mut key_event) = event::read()? {
+            // Normalizing key code sent to the terminal for cross-distribution compatibility
+            key_event = normalize_backspace(key_event);
+
             // Ignore key release events
             if key_event.kind == KeyEventKind::Release {
                 continue;
@@ -247,6 +265,7 @@ pub fn parse_cheatsheets(files: Vec<&File<'static>>) -> Vec<CheatSheet> {
         // Populate
         let mut commands: Vec<CommandContext> = Vec::new();
 
+        // === Command parsing done here
         for line in lines {
             // Ugly cleaning
             let cleaned_line = line.trim().to_string();
