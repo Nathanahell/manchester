@@ -89,15 +89,41 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+// fn normalize_backspace(key_event: KeyEvent) -> KeyEvent {
+//     match key_event {
+//         KeyEvent {
+//             code: KeyCode::Char('h'),
+//             modifiers,
+//             kind,
+//             state,
+//         } if modifiers.is_empty() => KeyEvent::new(KeyCode::Backspace, modifiers),
+//         other => other,
+//     }
+// }
+
+// ^H, ASCII 0x08, Unicode \u{8}) — not the printable letter 'h'
+// handle 0x7f (DEL)
 fn normalize_backspace(key_event: KeyEvent) -> KeyEvent {
-    match key_event {
-        KeyEvent {
-            code: KeyCode::Char('h'),
+    let KeyEvent {
+        code,
+        modifiers,
+        kind,
+        state,
+    } = key_event;
+
+    match code {
+        KeyCode::Char('\x08') | KeyCode::Char('\x7f') => KeyEvent {
+            code: KeyCode::Backspace,
             modifiers,
             kind,
             state,
-        } if modifiers.is_empty() => KeyEvent::new(KeyCode::Backspace, modifiers),
-        other => other,
+        },
+        other => KeyEvent {
+            code: other,
+            modifiers,
+            kind,
+            state,
+        },
     }
 }
 
