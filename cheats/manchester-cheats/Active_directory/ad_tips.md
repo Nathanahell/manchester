@@ -99,3 +99,21 @@ Specify the DC's ip for a given domain using -ns/-nameserver parameters in most 
 ```
 # If the OPSEc allows it, run systematically the injestor after each user compromission.
 ```
+
+## Timeroast NTP auth abuse - Gather MD5 digest, crack to recover user's NT Hash
+```
+# Timeroast
+# Unauthenticated clients can take a list of RIDs and send MS-SNTP requests to a DC to collect MD5 digests calculated with domain computer hashes. This makes timeroasting a viable method to identify and crack pre-created machine accounts and other weak computer passwords in a stealthier manner than by using dictionaries or tools like pre2k
+#  - it can only be used to obtain computer hashes
+#  - it requires a way to map RIDs to usernames, so either NULL sessions or valid domain credentials
+
+# More advanced attack as DA :
+# Abuse this technique to find clear text password (after cracking) of a few specific users but does not want to risk getting caught, thus deciding to avoid credential extraction methods that are likely to sound alarms
+# Ioc :
+# - multiple MS-SNTP client requests sent by the same host with a different RID
+# - the RID in these requests belongs to a user and not a computer
+# - ...
+# Rq: important to note that user accounts cannot be used for interactive logons while UF_WORKSTATION_TRUST_ACCOUNT is set.
+# More here : https://medium.com/@offsecdeer/targeted-timeroasting-stealing-user-hashes-with-ntp-b75c1f71b9ac
+python timeroast.py <IP>
+````

