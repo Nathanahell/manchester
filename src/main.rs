@@ -198,6 +198,11 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<
                         app.search_value_input.pop();
                         app.update_after_search();
                     }
+                    KeyCode::Delete => {
+                        // Fallaback : use DEL key to remove character in case backspace doesn't work
+                        app.search_value_input.pop();
+                        app.update_after_search();
+                    }
                     _ => {}
                 },
                 CurrentScreen::EditingCommand => {
