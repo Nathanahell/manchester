@@ -194,11 +194,7 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<
                         app.update_after_search();
                         app.search_table_state.select(Some(0)); // Rest the search index
                     }
-                    KeyCode::Backspace => {
-                        app.search_value_input.pop();
-                        app.update_after_search();
-                    }
-                    KeyCode::Delete => {
+                    KeyCode::Backspace | KeyCode::Delete => {
                         // Fallaback : use DEL key to remove character in case backspace doesn't work
                         app.search_value_input.pop();
                         app.update_after_search();
@@ -218,28 +214,28 @@ pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<
                         }
                         KeyCode::Char(char_value) => {
                             app.variable_value_input.push(char_value);
-                            todo!(
-                                "
-                            In ui()
-                            - Show variable value being inputed
-                            - Dynamically completed the command"
-                            );
+                            // todo!(
+                            //     "
+                            // In ui()
+                            // - Show variable value being inputed
+                            // - Dynamically completed the command"
+                            // );
                         }
                         KeyCode::Backspace => {
                             app.variable_value_input.pop();
-                            todo!(
-                                "
-                            In ui()
-                            - Show variable value being inputed
-                            - Dynamically completed the command"
-                            );
+                            // todo!(
+                            //     "
+                            // In ui()
+                            // - Show variable value being inputed
+                            // - Dynamically completed the command"
+                            // );
                         }
                         // Variable edition navigation
                         KeyCode::Up => {
-                            todo!("Circle through the varibles to edit")
+                            // todo!("Circle through the varibles to edit")
                         }
                         KeyCode::Down => {
-                            todo!("Circle through the varibles to edit")
+                            // todo!("Circle through the varibles to edit")
                         }
                         _ => {}
                     }

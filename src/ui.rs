@@ -74,7 +74,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         .borders(Borders::ALL)
         .style(Style::default());
 
-    // List all search results
+    // List all search results, populate table
     // N.B : The rows generation is placed before the other widgets so that they can reuse the results
 
     let mut table_rows = vec![];
@@ -256,11 +256,11 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         .block(Block::default().borders(Borders::NONE));
 
     let help_block = Paragraph::new(Span::styled(
-        "(Esc) quit | (Enter) to select command | Type to search | (↑) move up | (↓) move down",
+        "(Esc) quit | (Enter) to select command | Type character to search a command | (↑) move up | (↓) move down | (Backspace)/(Del): erase last character",
         Style::default().fg(Color::Yellow),
     ))
-    .style(Style::new().bg(Color::DarkGray))
-    .centered()
+    .style(Style::new().bg(Color::Black))
+    .left_aligned()
     .block(Block::default().borders(Borders::NONE));
 
     frame.render_widget(mode_block, mode_subchunk);
