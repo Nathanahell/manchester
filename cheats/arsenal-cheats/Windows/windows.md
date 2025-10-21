@@ -527,3 +527,5 @@ netdom trust <source_domain> /d:<target_domain> /enablesidhistory:yes
 ```
 msfconsole -x "use exploit/windows/smb/ms17_010_eternalblue"
 ```
+
+= interface: eth0

