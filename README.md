@@ -9,15 +9,16 @@ The main features of the tool are the following :
 - **Does not require internet access**: your notes are embedded within the binary, therefore no internet access or install is required after building the project. Ideal for constrained environment.
 - **Ease of use**: Use a fuzzy searcher for easier command matching. Navigation is done using the arrow keys.
 
-This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Do check them out :D
-
+This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-Cyberdefense/arsenal) tool. Do check them out.
 
 ## The author's note
 
-This is my first ever open-source project. I took a chance to practice Rust and to fiddle with the Ratatui library.
-I am open for any improvements in my code as I am not quite a software developper yet. Any constructive feedback is much appreciated. :)
+I took a chance to practice Rust and to fiddle with the Ratatui library.
+Any constructive feedback is much appreciated.
+The usefulness of the tool is dependent on your contribution. This project aims to be a general purpose command/short cheatsheet finder for sysadmin, networking, architecture and hacking. As such, any command you regularily use to speed-up your workflow is eligible to a contribution.
 
-Like the project ? Don't hesitate to contribute !
+
+Like the project ? Open a PR ! :)
 
 ## Demo
 
