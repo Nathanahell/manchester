@@ -11,3 +11,12 @@ find . -type d -empty -not -path "./.git/*" -exec touch {}/.gitkeep \;
 ```
 ps -ef --forest
 ```
+
+## bash - debugging scripts tricks
+```
+# set ...
+set +/-x
+
+# trapping errors
+https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line
+```
