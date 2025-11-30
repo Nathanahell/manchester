@@ -15,8 +15,7 @@ This project was heavily inspired by OCD's [Arsenal](https://github.com/Orange-C
 
 I took a chance to practice Rust and to fiddle with the Ratatui library.
 Any constructive feedback is much appreciated.
-The usefulness of the tool is dependent on your contribution. This project aims to be a general purpose command/short cheatsheet finder for sysadmin, networking, architecture and hacking. As such, any command you regularily use to speed-up your workflow is eligible to a contribution.
-
+The usefulness of the tool is dependent on your contribution. This project aims to be a general purpose command/cheatsheet finder for sysadmin, networking, architecture and hacking. As such, any command you regularily use to speed-up your workflow is eligible to a contribution.
 
 Like the project ? Open a PR ! :)
 
@@ -45,7 +44,6 @@ To do.
 
 ## Contribution
 
-Any contribution is welcome. Be it documentation, code changes and especially commands.
 ### Code contribution ideas
 - Allow for the completion of a command within a box prompting for input after a command has been selected
 - Windows's Defender evasion : the binary is flagged a malicious as it contains malicious commands. Loading encrypted notes at compile-time and decrypting them at runtime would be a way to trivial detection.
