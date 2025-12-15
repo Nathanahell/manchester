@@ -124,3 +124,9 @@ If you are Admin on a DC which plays the role of the KDC, you can
 - dump the TGT already on memory using Rubeus & impersonate users
 - monitor & harvest TGT on that DC
 ```
+
+## Noteworthy default settings for a DC
+```
+- SMB
+  - SMB signing is enabled by default on Windows Server acting as DC
+```
