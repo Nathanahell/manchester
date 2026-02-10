@@ -2,9 +2,22 @@
 
 #plateform/linux  #target/remote  #protocol/ldap  #port/639 #port/389
 
+## ldpasearch common options
+```
+Common options:
+
+    -x: Simple authentication (instead of SASL)
+    -H: LDAP server URI (ldaps:// for SSL)
+    -b: Base DN to start search (change to your domain) Ex :  -b "dc=example,dc=com"
+    -D "cn=admin,dc=example,dc=com": Bind DN (if authentication needed)
+    -w password or -W: Password (prompt or inline)
+```
+
 ## ldapsearch anonymous, dump directory structure, simple login, ignore certificate validation
 ```
 LDAPTLS_REQCERT=never  ldapsearch -x -LLL -H ldaps://<IP>:<PORT>  -b "" "(objectClass=*)"
+# OR
+ldapsearch -x -H ldap://server -b "" -s sub "(objectClass=*)" 2>/dev/null
 ````
 
 ## ldapsearch - users

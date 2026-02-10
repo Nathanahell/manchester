@@ -38,3 +38,8 @@ john --wordlist=rockyou.txt zip.hash
 ```
 bitlocker2john -i Backup.vhd > backup.hashes
 ```
+
+## ssh2john - cracking passphrase
+```
+ssh2john.py id_XX > id_XX.2crack
+```
