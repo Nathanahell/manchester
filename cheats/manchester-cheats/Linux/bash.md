@@ -20,3 +20,8 @@ set +/-x
 # trapping errors
 https://unix.stackexchange.com/questions/39623/trap-err-and-echoing-the-error-line
 ```
+
+# tar - extract .tar.gz archive
+```
+tar -xvzf archive.tar.gz -C custome_folder
+```

