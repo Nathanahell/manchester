@@ -64,7 +64,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         .borders(Borders::ALL)
         .style(Style::default());
     */
-    let banner = Paragraph::new(BANNER).alignment(Alignment::Center);
+    let banner = Paragraph::new(BANNER)
+        .alignment(Alignment::Center)
+        .wrap(Wrap { trim: true });
 
     frame.render_widget(banner, banner_rectangle);
 
