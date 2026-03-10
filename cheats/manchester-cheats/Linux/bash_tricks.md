@@ -10,4 +10,5 @@ If a script do not use absolute path to run binaries, to access file, then lever
 See
 https://unix.stackexchange.com/questions/172103/security-implications-of-using-unsanitized-data-in-shell-arithmetic-evaluation
 https://github.com/koalaman/shellcheck/issues/3088
+https://dev.to/greymd/eq-can-be-critically-vulnerable-338m
 ```
