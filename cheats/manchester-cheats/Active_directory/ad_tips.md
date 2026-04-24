@@ -172,3 +172,29 @@ With access to this XML file, the attacker can use the AES private key to decryp
 
 https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1
 ```
+
+# Debug common error : KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
+```
+# Debug KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
+i.e SPN you’re requesting doesn’t exist or doesn’t match the target
+Use FQDN to define the server principal
+
+Kerberos expects server principals name (SPN) like : cifs/DC-JPQ225.foo.vl
+- No SPN if you use IP
+- check if you didn't use the wrong hostname/domain
+
+1. Use FQDN, not IP
+2. Ensure DNS resolution :
+/etc/hosts:
+10.129.17.112 DC-JPQ225.domain.internal DC-JPQ225
+3. Force SPN / hostname if supported
+4. Verify klist : klist
+```
+
+# kerberos set-up
+```
+# kerberos set-up
+1. Set-up reamls in /etc/krb5.conf
+2. export ccache once you have it to auth as a user : export KRB5CCNAME=<FILE TO PATH>
+3. Set-up name resolution in /etc/hosts & use the FQDN of DC in your tools
+```
