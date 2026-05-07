@@ -198,3 +198,18 @@ Kerberos expects server principals name (SPN) like : cifs/DC-JPQ225.foo.vl
 2. export ccache once you have it to auth as a user : export KRB5CCNAME=<FILE TO PATH>
 3. Set-up name resolution in /etc/hosts & use the FQDN of DC in your tools
 ```
+
+## Log Hygiene - useful points
+```
+# Log Hygiene - useful points
+
+# Creds in log
+- An ADCS-enabled, hardened Active Directory environment still fell to a plaintext password in a readable file share. Old IdentitySync traces that look harmless contain bind credentials.
+```
+
+## gMSA points
+```
+# gMSA points
+- GenericWrite on a gMSA is equivalent to holding its password — you can grant yourself read access on msDS-GroupMSAMembership and dump the NT hash whenever you want.
+```
+
