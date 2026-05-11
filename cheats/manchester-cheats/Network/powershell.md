@@ -124,3 +124,29 @@ https://github.com/samratashok/nishang
     }
 }
 ```
+
+## powershell & console - alternate data stream (ADS)
+```
+# Powershell ---
+
+# List streams
+Get-Item * -Stream *
+
+# Read file ADS
+Get-Item file.foo | Get-Content -Stream <STREAM.NAME>
+Get-Content -Path "hm.txt" -Stream "root.txt"
+
+# Remove 'Mark of the web' blocking field
+Unblock-File .\MyFile.docx
+
+# Console ---
+echo Diwali wishes > C:\Lab\Diwali.txt    # To create visible host file, in this case a TXT file named Diwali.
+
+copy /b "C:\Lab\images\diya.jpg" "C:\Lab\Diwali.txt:Diya"   # Command to copy a image file to the ADS of Diwali.txt
+
+dir /R C:\Lab # Command to list all ADS files in a directory. 
+
+copy /b "C:\Lab\Diwali.txt:Diya" "C:\Temp\Diya_extracted.jpg"   # Command to extract the image file from ADS and paste it in a folder
+
+start "C:\Temp\Diya_extracted.jpg"  # Command to open the file
+```
