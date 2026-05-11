@@ -88,5 +88,13 @@ pypykatz dpapi prekey password <UserSID> <User's password> > <Prekey file>
 pypykatz dpapi <DPAPI master key file with GUID name> <Prekey file> -o masterkey_file
 - Decrypt encrypted blob, example chrome:
 pypykatz dpapi chrom --logindata Login.sqlite masterkey_file state
+```
 
+## DLL tips
+```
+# DLL tips
+# Scheduled-task DLL hiajck
+- Scheduled-Task DLL Hijacks Are a User-Impersonation Primitive : Any user that can write to the input directory of a scheduled task running as another principal effectively executes as that principal. On Logging the input was a zip file; the task unpacked it into Program Files\...\bin\ and loaded the DLL.
+- Tame Subprocesses in Looping Tasks : Never spawn an interactive-prone binary (certreq, net use, netsh) from inside a DLL loaded by a repeating task without -f//y//quiet flags and < NUL. A single hung child will freeze the DLL load slot for the duration of the box.
+  
 ```
