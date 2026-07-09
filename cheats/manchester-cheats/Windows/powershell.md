@@ -150,10 +150,6 @@ Get-ChildItem -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\SrpV2\Exe
 ```powershell
 ([System.DirectoryServices.ActiveDirectory.Forest]::GetCurrentForest()).GetAllTrustRelationships()
 ```
-## Get domain trust
-```powershell
-Get-DomainTrust -Domain <domain>
-```
 
 ## Get domain SID
 ```powershell
