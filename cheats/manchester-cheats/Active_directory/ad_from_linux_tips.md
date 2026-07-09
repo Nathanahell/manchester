@@ -88,6 +88,7 @@ proxychains impacket-wmiexec dc01 -k
 # need to install the Kerberos package used for network authentication
 
 # update conf for domain
+# cf 'kerberos set-up' in ad_tips.md
 $ cat /etc/krb5.conf
 [libdefaults]
         default_realm = <DOMAIN>

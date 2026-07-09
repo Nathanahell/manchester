@@ -49,7 +49,7 @@ dir *.kirbi
 # DNS Admin which SID > 1000 is a default group, ignore it
 ```
 
-# Faketime - Adhoc Kerberos auth
+## Faketime - Adhoc Kerberos auth
 ```
 # Using faketime + ntpdate to avoid KRB_AP_ERR_SKEW(Clock skew too great)
 
@@ -64,7 +64,7 @@ bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2 -
 # source : https://notes.benheater.com/books/active-directory/page/using-faketime-for-ad-hoc-kerberos-authentication
 ```
 
-# impacket - secretsdumps
+## impacket - secretsdumps
 ```
 Useful options :
 -pwd-last-set -user-status -history
@@ -74,20 +74,6 @@ Faster cracking if recent passwords are a variation of older ones that got crack
 Opsec :
 If you used ForcedPassword on a user to set a users's password
 You can revert the user's hash to its previous value to make it appear unchanged
-```
-
-# Reminder : Domain name resolution
-```
-1. Domain/DC name resolution
-Once you've found a domain name + a DC for it, add to the /etc/hosts the matching resolution :
-X.X.X.X domain.tld dc.domain.tld dc01.domain.tld
-
-When authenticating using kerberos, replace :
-- DC IP <> DC name matching in the IP in /etc/hosts
-
-It is especially when using kerberos authentication and avoid LDAP authentication errors
-2. Name server
-Specify the DC's ip for a given domain using -ns/-nameserver parameters in most tools.
 ```
 
 ## Using NT:LM hash
@@ -125,8 +111,9 @@ If you are Admin on a DC which plays the role of the KDC, you can
 - monitor & harvest TGT on that DC
 ```
 
-## Noteworthy default settings for a DC
+## Remarkable default settings for a DC
 ```
+# Remarkable default settings for a DC
 - SMB
   - SMB signing is enabled by default on Windows Server acting as DC
 ```
@@ -173,7 +160,7 @@ With access to this XML file, the attacker can use the AES private key to decryp
 https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1
 ```
 
-# Debug common error : KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
+## Debug common error : KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
 ```
 # Debug KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
 i.e SPN you’re requesting doesn’t exist or doesn’t match the target
@@ -191,12 +178,40 @@ Kerberos expects server principals name (SPN) like : cifs/DC-JPQ225.foo.vl
 4. Verify klist : klist
 ```
 
-# kerberos set-up
+## kerberos set-up
 ```
 # kerberos set-up
-1. Set-up reamls in /etc/krb5.conf
+1. Domain/DC name resolution
+Once you've found a domain name + a DC for it, add to the /etc/hosts the matching resolution :
+X.X.X.X domain.tld dc.domain.tld dc01.domain.tld
+2. Set-up reamls in /etc/krb5.conf
+
+$ cat /etc/krb5.conf
+[libdefaults]
+        default_realm = default_value
+
+<SNIP>
+
+[realms]
+    INLANEFREIGHT.HTB = {
+        kdc = dc01.<DOMAIN>
+    }
+
+<SNIP>
+
+[domain_realm]
+	.csail.mit.edu = CSAIL.MIT.EDU
+	csail.mit.edu = CSAIL.MIT.EDU
+  .<FOO>.<HTB> = <FOO>.<HTB>
+  <FOO>.<HTB> = <FOO>.<HTB>
+
 2. export ccache once you have it to auth as a user : export KRB5CCNAME=<FILE TO PATH>
 3. Set-up name resolution in /etc/hosts & use the FQDN of DC in your tools
+
+- When authenticating using kerberos, replace :
+DC IP <> DC name matching in the IP in /etc/hosts
+It is especially when using kerberos authentication and avoid LDAP authentication errors
+- Specify the DC's ip for a given domain using -ns/-nameserver parameters in most tools.
 ```
 
 ## Log Hygiene - useful points
