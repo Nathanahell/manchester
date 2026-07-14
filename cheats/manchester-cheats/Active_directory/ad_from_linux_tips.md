@@ -116,3 +116,10 @@ impacket-ticketConverter krb5cc_647401106_I8I133 julio.kirbi
 ```
 wget https://raw.githubusercontent.com/CiscoCXSecurity/linikatz/master/linikatz.sh
 ```
+
+## Generate /etc/hosts set-up for a given domain
+```
+# Generate /etc/hosts set-up for a domain
+nxc smb $TARGET --generate-hosts-file hosts
+sudo cat hosts /etc/hosts | sudo sponge /etc/hosts # need 'sponge' in moreutils package
+```
