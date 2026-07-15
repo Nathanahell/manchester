@@ -20,3 +20,11 @@ Created: media/media.asx (OPEN)
 
 # start Responder in order to capture the hash of the user that opens them. Once Responder is running we can upload one of the three files we're interested in to see if we can get a response.
 ```
+
+## LDAP - Recover creds from LDAP profile tester
+```
+ometimes, it is possible to retrieve cleartext credentials by tricking the LDAP connection tester to connect to your own Netcat listener. 
+Since it is using LDAPS, however, we will need to try editingthe existing LDAP URL ldaps://authority.htb.corp:636 to use ldap:// and port 389 ,pointing it to our attacking machine's host IP instead
+
+nc -lvnp 389
+```
