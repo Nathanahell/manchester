@@ -13,7 +13,6 @@ certipy find -u <user>@<domain> -p '<password>' -dc-ip <dc-ip>
 certipy-ad find -target dc01.tombwatcher.htb -u john -p rogue
 ```
 
-
 ## certipy - request certificate
 #plateform/linux #target/remote #cat/ATTACK
 ```
